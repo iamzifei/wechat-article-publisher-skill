@@ -283,13 +283,13 @@ A: `browser_wait_for textGone="..."` returns as soon as the text disappears. The
 
 ## Changelog
 
-### v1.1.0 (2024-12)
+### v1.1.0 (2025-12)
 - **Block-index positioning**: Replace text matching with precise element indices
 - **Reverse insertion order**: Prevent index shifts when inserting multiple images
 - **Optimized wait strategy**: Return immediately when upload completes
 - **H1 title handling**: H1 extracted as title, not included in body HTML
 
-### v1.0.0 (2024-12)
+### v1.0.0 (2025-12)
 - Initial release
 - Rich text paste via clipboard
 - Cover + content image support
