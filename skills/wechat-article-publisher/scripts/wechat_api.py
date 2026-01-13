@@ -20,6 +20,9 @@ Usage:
     # Publish from markdown file
     python wechat_api.py publish --appid <wechat_appid> --markdown /path/to/article.md
 
+    # Publish from HTML file (with formatting preserved)
+    python wechat_api.py publish --appid <wechat_appid> --html /path/to/article.html
+
     # Publish as "小绿书" (image-text mode)
     python wechat_api.py publish --appid <wechat_appid> --markdown /path/to/article.md --type newspic
 
@@ -312,6 +315,86 @@ def parse_markdown_for_wechat(filepath: str) -> dict:
     }
 
 
+def parse_html_for_wechat(filepath: str) -> dict:
+    """
+    Parse an HTML file and extract data for WeChat publishing.
+
+    Extracts title from <title> tag, <h1> tag, or first heading.
+    Uses <body> content or full content if no body tag.
+
+    Args:
+        filepath: Path to the HTML file
+
+    Returns:
+        Dictionary containing:
+            - title: Article title
+            - content: Article content (HTML)
+            - cover_image: First image URL/path (if any)
+            - summary: Text from first paragraph (truncated to 120 chars)
+    """
+    import re
+
+    path = Path(filepath)
+    if not path.exists():
+        print(f"Error: File not found: {filepath}", file=sys.stderr)
+        sys.exit(1)
+
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Extract title from <title> tag first
+    title = "Untitled"
+    title_match = re.search(r"<title[^>]*>([^<]+)</title>", content, re.IGNORECASE)
+    if title_match:
+        title = title_match.group(1).strip()
+    else:
+        # Try <h1> tag
+        h1_match = re.search(r"<h1[^>]*>([^<]+)</h1>", content, re.IGNORECASE)
+        if h1_match:
+            title = h1_match.group(1).strip()
+
+    # Truncate title to 64 characters (WeChat limit)
+    title = title[:64]
+
+    # Extract body content if present
+    body_match = re.search(r"<body[^>]*>(.*?)</body>", content, re.IGNORECASE | re.DOTALL)
+    if body_match:
+        html_content = body_match.group(1).strip()
+    else:
+        # Use full content, but try to remove html/head tags
+        html_content = re.sub(r"<html[^>]*>|</html>", "", content, flags=re.IGNORECASE)
+        html_content = re.sub(r"<head[^>]*>.*?</head>", "", html_content, flags=re.IGNORECASE | re.DOTALL)
+        html_content = re.sub(r"<!DOCTYPE[^>]*>", "", html_content, flags=re.IGNORECASE)
+        html_content = html_content.strip()
+
+    # Extract first image as cover
+    cover_image = None
+    img_match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', html_content, re.IGNORECASE)
+    if img_match:
+        cover_image = img_match.group(1)
+        # If relative path, make absolute
+        if cover_image and not cover_image.startswith(("http://", "https://", "data:")):
+            cover_path = path.parent / cover_image
+            if cover_path.exists():
+                cover_image = str(cover_path.absolute())
+
+    # Extract summary from first <p> tag
+    summary = None
+    p_match = re.search(r"<p[^>]*>([^<]+)", html_content, re.IGNORECASE)
+    if p_match:
+        # Remove HTML tags and get plain text
+        summary_text = re.sub(r"<[^>]+>", "", p_match.group(1))
+        summary = summary_text.strip()[:120]
+
+    return {
+        "title": title,
+        "content": html_content,
+        "cover_image": cover_image,
+        "summary": summary,
+        "source_file": str(path.absolute()),
+    }
+
+
 def main():
     """Main entry point for CLI."""
     parser = argparse.ArgumentParser(
@@ -348,6 +431,10 @@ def main():
         help="Path to markdown file (alternative to --title and --content)"
     )
     publish_parser.add_argument(
+        "--html",
+        help="Path to HTML file (alternative to --markdown, auto-sets format to html)"
+    )
+    publish_parser.add_argument(
         "--summary",
         help="Article summary (max 120 characters)"
     )
@@ -379,8 +466,19 @@ def main():
         print(json.dumps(result, ensure_ascii=False, indent=2))
 
     elif args.command == "publish":
-        # Get content from markdown file or direct input
-        if args.markdown:
+        # Determine content format based on input
+        content_format = args.format
+
+        # Get content from file or direct input
+        if args.html:
+            # HTML file takes precedence, auto-set format to html
+            parsed = parse_html_for_wechat(args.html)
+            title = args.title or parsed["title"]
+            content = parsed["content"]
+            summary = args.summary or parsed["summary"]
+            cover = args.cover or parsed["cover_image"]
+            content_format = "html"  # Always use html format for HTML files
+        elif args.markdown:
             parsed = parse_markdown_for_wechat(args.markdown)
             title = args.title or parsed["title"]
             content = parsed["content"]
@@ -389,7 +487,7 @@ def main():
         else:
             if not args.title or not args.content:
                 print(
-                    "Error: Either --markdown or both --title and --content required",
+                    "Error: Either --markdown, --html, or both --title and --content required",
                     file=sys.stderr
                 )
                 sys.exit(1)
@@ -405,7 +503,7 @@ def main():
             summary=summary,
             cover_image=cover,
             author=args.author,
-            content_format=args.format,
+            content_format=content_format,
             article_type=args.type,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))

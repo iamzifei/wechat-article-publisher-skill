@@ -2,7 +2,7 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-> Publish Markdown articles to WeChat Official Account drafts with one command. Say goodbye to tedious copy-paste-format workflows.
+> Publish Markdown or HTML articles to WeChat Official Account drafts with one command. Say goodbye to tedious copy-paste-format workflows.
 
 **v1.0.0** — API-based publishing for reliability and speed
 
@@ -37,7 +37,7 @@ If you write in Markdown, publishing to WeChat Official Account (公众号) is a
 This skill uses WeChat's API for direct, reliable publishing:
 
 ```
-Markdown File
+Markdown/HTML File
      | Python parsing
      v
 Structured Data (title, content, images)
@@ -50,8 +50,9 @@ Draft in WeChat Official Account (never auto-publishes)
 
 - **API-Based**: Direct API calls, no browser automation needed
 - **Cross-Platform**: Works on macOS, Linux, and Windows
-- **Format Preserved**: Markdown automatically converted to WeChat-compatible format
-- **Image Auto-Upload**: Images in your markdown are automatically uploaded
+- **Dual Format**: Supports both Markdown (.md) and HTML (.html) files
+- **Format Preserved**: HTML formatting preserved, Markdown auto-converted
+- **Image Auto-Upload**: Images in your content are automatically uploaded
 - **Safe by Design**: Only saves as draft, never publishes automatically
 - **小绿书 Support**: Publish as image-text format (newspic) for visual content
 
@@ -108,10 +109,22 @@ Publish ~/Documents/my-post.md to WeChat
 帮我把这篇文章发到公众号：~/articles/ai-tools.md
 ```
 
+```
+把这个HTML文章发布到公众号：~/newsletter/issue-01.html
+```
+
+```
+Publish the HTML article ~/export/formatted-post.html to WeChat
+```
+
 ### Skill Command
 
 ```
 /wechat-article-publisher /path/to/article.md
+```
+
+```
+/wechat-article-publisher /path/to/article.html
 ```
 
 ### With Options
@@ -134,7 +147,8 @@ Publish ~/Documents/my-post.md to WeChat
       -> Auto-select if only one, ask if multiple
 
 [3/4] Publish Article...
-      -> Parse markdown (title, content, images)
+      -> Detect file format (Markdown or HTML)
+      -> Parse content (title, body, images)
       -> Call WeChat API
       -> Upload images automatically
 
@@ -145,7 +159,9 @@ Publish ~/Documents/my-post.md to WeChat
 
 ---
 
-## Supported Markdown
+## Supported Formats
+
+### Markdown (.md)
 
 | Syntax | Result |
 |--------|--------|
@@ -160,6 +176,21 @@ Publish ~/Documents/my-post.md to WeChat
 | `1. item` | Ordered lists |
 | ``` code ``` | Code blocks |
 | `![](img.jpg)` | Images (auto-uploaded) |
+
+### HTML (.html)
+
+| Element | Result |
+|---------|--------|
+| `<title>` or `<h1>` | Article title |
+| `<h2>`, `<h3>` | Section headers |
+| `<strong>`, `<b>` | **Bold text** |
+| `<em>`, `<i>` | *Italic text* |
+| `<a href="">` | Hyperlinks |
+| `<blockquote>` | Blockquotes |
+| `<ul>`, `<ol>` | Lists |
+| `<table>` | Tables (preserved) |
+| `<img src="">` | Images (auto-uploaded) |
+| Inline styles | Preserved |
 
 ---
 
@@ -266,9 +297,14 @@ A: Yes! Unlike browser-based tools, this API-based approach works on all platfor
 python wechat_api.py list-accounts
 ```
 
-### Publish Article
+### Publish Markdown Article
 ```bash
 python wechat_api.py publish --appid <appid> --markdown /path/to/article.md
+```
+
+### Publish HTML Article
+```bash
+python wechat_api.py publish --appid <appid> --html /path/to/article.html
 ```
 
 ### Publish as 小绿书
@@ -285,6 +321,12 @@ python wechat_api.py publish --appid <appid> --markdown /path/to/article.md --ty
 ---
 
 ## Changelog
+
+### v1.1.0 (2025-01)
+- Add HTML file support with formatting preserved
+- Auto-detect file format (Markdown or HTML)
+- Extract title from HTML `<title>` or `<h1>` tags
+- Support inline styles and rich HTML formatting
 
 ### v1.0.0 (2025-01)
 - Initial release for WeChat Official Account

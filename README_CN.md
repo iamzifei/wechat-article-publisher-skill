@@ -2,9 +2,9 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-> 一键将 Markdown 文章发布到微信公众号草稿箱，告别繁琐的复制粘贴排版流程。
+> 一键将 Markdown 或 HTML 文章发布到微信公众号草稿箱，告别繁琐的复制粘贴排版流程。
 
-**v1.0.0** — 基于 API 的发布方式，稳定高效
+**v1.1.0** — 基于 API 的发布方式，稳定高效，支持 Markdown 和 HTML
 
 ---
 
@@ -37,7 +37,7 @@
 本 Skill 使用微信 API 直接发布，稳定可靠：
 
 ```
-Markdown 文件
+Markdown/HTML 文件
      | Python 解析
      v
 结构化数据（标题、内容、图片）
@@ -50,7 +50,8 @@ Markdown 文件
 
 - **基于 API**：直接调用 API，无需浏览器自动化
 - **跨平台**：支持 macOS、Linux、Windows
-- **格式保留**：Markdown 自动转换为公众号兼容格式
+- **双格式支持**：同时支持 Markdown (.md) 和 HTML (.html) 文件
+- **格式保留**：HTML 格式完整保留，Markdown 自动转换
 - **图片自动上传**：文章中的图片自动上传到微信服务器
 - **安全设计**：仅保存草稿，绝不自动发布
 - **小绿书支持**：支持发布为图文消息格式
@@ -105,13 +106,25 @@ cp .env.example .env
 ```
 
 ```
+把这个HTML文章发布到公众号：~/newsletter/issue-01.html
+```
+
+```
 Publish ~/Documents/my-post.md to WeChat
+```
+
+```
+发布这个带排版的HTML文件到微信：~/export/formatted-post.html
 ```
 
 ### Skill 命令
 
 ```
 /wechat-article-publisher /path/to/article.md
+```
+
+```
+/wechat-article-publisher /path/to/article.html
 ```
 
 ### 带选项使用
@@ -134,7 +147,8 @@ Publish ~/Documents/my-post.md to WeChat
       -> 如果只有一个则自动选择，多个则询问用户
 
 [3/4] 发布文章...
-      -> 解析 Markdown（标题、内容、图片）
+      -> 检测文件格式（Markdown 或 HTML）
+      -> 解析内容（标题、正文、图片）
       -> 调用微信 API
       -> 自动上传图片
 
@@ -145,7 +159,9 @@ Publish ~/Documents/my-post.md to WeChat
 
 ---
 
-## 支持的 Markdown 格式
+## 支持的格式
+
+### Markdown (.md)
 
 | 语法 | 效果 |
 |------|------|
@@ -160,6 +176,21 @@ Publish ~/Documents/my-post.md to WeChat
 | `1. 列表` | 有序列表 |
 | ``` 代码 ``` | 代码块 |
 | `![](img.jpg)` | 图片（自动上传） |
+
+### HTML (.html)
+
+| 元素 | 效果 |
+|------|------|
+| `<title>` 或 `<h1>` | 文章标题 |
+| `<h2>`, `<h3>` | 章节标题 |
+| `<strong>`, `<b>` | **粗体文字** |
+| `<em>`, `<i>` | *斜体文字* |
+| `<a href="">` | 超链接 |
+| `<blockquote>` | 引用块 |
+| `<ul>`, `<ol>` | 列表 |
+| `<table>` | 表格（保留） |
+| `<img src="">` | 图片（自动上传） |
+| 内联样式 | 保留 |
 
 ---
 
@@ -266,9 +297,14 @@ A: 支持！与浏览器自动化工具不同，本 Skill 基于 API，支持所
 python wechat_api.py list-accounts
 ```
 
-### 发布文章
+### 发布 Markdown 文章
 ```bash
 python wechat_api.py publish --appid <appid> --markdown /path/to/article.md
+```
+
+### 发布 HTML 文章
+```bash
+python wechat_api.py publish --appid <appid> --html /path/to/article.html
 ```
 
 ### 发布为小绿书
@@ -285,6 +321,12 @@ python wechat_api.py publish --appid <appid> --markdown /path/to/article.md --ty
 ---
 
 ## 更新日志
+
+### v1.1.0 (2025-01)
+- 新增 HTML 文件支持，保留原有格式
+- 自动检测文件格式（Markdown 或 HTML）
+- 从 HTML `<title>` 或 `<h1>` 标签提取标题
+- 支持内联样式和丰富的 HTML 格式
 
 ### v1.0.0 (2025-01)
 - 首次发布，支持微信公众号

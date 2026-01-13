@@ -1,11 +1,11 @@
 ---
 name: wechat-article-publisher
-description: Publish Markdown articles to WeChat Official Account drafts via API. Use when user wants to publish a Markdown file/URL to WeChat, or mentions "publish to WeChat", "post to 公众号", "微信公众号文章", "发布到微信", or wants help with WeChat article publishing. Converts Markdown to WeChat-compatible format and publishes to drafts automatically.
+description: Publish Markdown or HTML articles to WeChat Official Account drafts via API. Use when user wants to publish a Markdown/HTML file to WeChat, or mentions "publish to WeChat", "post to 公众号", "微信公众号文章", "发布到微信", "HTML文章", or wants help with WeChat article publishing. Supports both Markdown and HTML formats with automatic format detection.
 ---
 
 # WeChat Article Publisher
 
-Publish Markdown content to WeChat Official Account drafts via API, with automatic format conversion.
+Publish Markdown or HTML content to WeChat Official Account drafts via API, with automatic format conversion.
 
 ## Prerequisites
 
@@ -26,6 +26,9 @@ python wechat_api.py list-accounts
 # Publish from markdown file
 python wechat_api.py publish --appid <wechat_appid> --markdown /path/to/article.md
 
+# Publish from HTML file (preserves formatting)
+python wechat_api.py publish --appid <wechat_appid> --html /path/to/article.html
+
 # Publish with custom options
 python wechat_api.py publish --appid <appid> --markdown /path/to/article.md --type newspic
 ```
@@ -44,9 +47,13 @@ Unlike browser-based publishing, this skill uses direct API calls for reliable, 
 
 1. Load WECHAT_API_KEY from environment
 2. List available WeChat accounts (if user hasn't specified)
-3. Parse Markdown file to extract title, content, cover image
+3. Detect file format (Markdown or HTML) and parse accordingly
 4. Call publish API to create draft in WeChat
 5. Report success with draft details
+
+**Supported File Formats:**
+- `.md` files → Parsed as Markdown, converted by WeChat API
+- `.html` files → Sent as HTML, formatting preserved
 
 ## Step-by-Step Guide
 
@@ -98,15 +105,21 @@ Output example:
 
 ### Step 3: Publish Article
 
-Publish the markdown file to WeChat drafts:
-
+**For Markdown files:**
 ```bash
 python ~/.claude/skills/wechat-article-publisher/scripts/wechat_api.py publish \
   --appid <wechatAppid> \
   --markdown /path/to/article.md
 ```
 
-For 小绿书 (image-text mode):
+**For HTML files (preserves formatting):**
+```bash
+python ~/.claude/skills/wechat-article-publisher/scripts/wechat_api.py publish \
+  --appid <wechatAppid> \
+  --html /path/to/article.html
+```
+
+**For 小绿书 (image-text mode):**
 ```bash
 python ~/.claude/skills/wechat-article-publisher/scripts/wechat_api.py publish \
   --appid <wechatAppid> \
@@ -188,8 +201,9 @@ Parameters:
 4. **Handle errors gracefully** - Show clear error messages
 5. **Preserve original content** - Don't modify user's markdown unnecessarily
 
-## Supported Markdown
+## Supported Formats
 
+### Markdown Files (.md)
 - H1 header (# ) → Article title
 - H2/H3 headers (##, ###) → Section headers
 - Bold (**text**)
@@ -199,6 +213,22 @@ Parameters:
 - Code blocks (``` ... ```)
 - Lists (- or 1.)
 - Images ![alt](url) → Auto-uploaded to WeChat
+
+### HTML Files (.html)
+- `<title>` or `<h1>` → Article title
+- All HTML formatting preserved (styles, tables, etc.)
+- `<img>` tags → Images auto-uploaded to WeChat
+- First `<p>` → Auto-extracted as summary
+- Supports inline styles and rich formatting
+
+**HTML Title Extraction Priority:**
+1. `<title>` tag content
+2. First `<h1>` tag content
+3. "Untitled" as fallback
+
+**HTML Content Extraction:**
+- If `<body>` exists, uses body content
+- Otherwise, strips `<html>`, `<head>`, `<!DOCTYPE>` and uses remaining content
 
 ## Article Types
 
@@ -215,6 +245,7 @@ Parameters:
 
 ## Example Flow
 
+### Markdown File
 User: "把 ~/articles/ai-tools.md 发布到微信公众号"
 
 ```bash
@@ -231,6 +262,25 @@ python ~/.claude/skills/wechat-article-publisher/scripts/wechat_api.py publish \
 
 # Step 4: Report
 # "文章已成功发布到公众号草稿箱！请登录微信公众平台预览并发布。"
+```
+
+### HTML File
+User: "把这个HTML文章发布到公众号：~/articles/newsletter.html"
+
+```bash
+# Step 1: Verify API key
+cat .env | grep WECHAT_API_KEY
+
+# Step 2: List accounts
+python ~/.claude/skills/wechat-article-publisher/scripts/wechat_api.py list-accounts
+
+# Step 3: Publish HTML (auto-detects format)
+python ~/.claude/skills/wechat-article-publisher/scripts/wechat_api.py publish \
+  --appid wx1234567890 \
+  --html ~/articles/newsletter.html
+
+# Step 4: Report
+# "文章已成功发布到公众号草稿箱！HTML格式已保留。请登录微信公众平台预览并发布。"
 ```
 
 ## Error Handling
