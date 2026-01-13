@@ -1,8 +1,8 @@
-# LinkedIn Article Publisher Skill 使用指南
+# 微信公众号文章发布 Skill 使用指南
 
-> 一键将 Markdown 文章发布到 LinkedIn Articles，告别繁琐的富文本编辑。
+> 一键将 Markdown 文章发布到微信公众号草稿箱，告别繁琐的复制粘贴排版流程。
 
-**v1.0.0** — Block-index 精确定位，图片位置更准确
+**v1.0.0** — 基于 API 的发布方式，稳定高效
 
 ---
 
@@ -19,81 +19,61 @@
 
 ## 1. 解决的痛点
 
-### 1.1 LinkedIn Articles 是什么？
+### 1.1 微信公众号是什么？
 
-LinkedIn 为所有用户提供了 **Articles** 功能，允许用户发布长文章（类似博客），在专业社交网络上分享见解。文章支持：
+微信公众号是微信平台上的内容发布工具，允许个人和企业发布文章、图文消息等内容给订阅者。文章支持：
 
 - 富文本格式（标题、粗体、引用等）
 - 多张图片嵌入
 - 超链接
+- 音视频
 
-访问入口：https://www.linkedin.com/article/new/
+管理后台：https://mp.weixin.qq.com
 
 ### 1.2 手动发布的痛点
 
-如果你习惯用 Markdown 写作，将内容发布到 LinkedIn Articles 是一个**极其繁琐**的过程：
+如果你习惯用 Markdown 写作，将内容发布到微信公众号是一个**极其繁琐**的过程：
 
 #### 痛点一：格式无法直接粘贴
 
 ```
-从 Markdown 编辑器复制内容 -> 粘贴到 LinkedIn Articles -> 格式全部丢失
+从 Markdown 编辑器复制内容 -> 粘贴到公众号编辑器 -> 格式全部丢失
 ```
 
-LinkedIn Articles 编辑器不支持 Markdown，你需要**逐一手动设置**每个格式：
+公众号编辑器不支持 Markdown，你需要**逐一手动设置**每个格式：
 - 选中文字 -> 点击 H2 按钮
 - 选中文字 -> 点击粗体按钮
 - 选中文字 -> 点击链接按钮 -> 粘贴 URL
 
 一篇包含 5 个小节、10 处加粗、8 个链接的文章，格式设置可能需要 **15-20 分钟**。
 
-#### 痛点二：图片插入效率低下
+#### 痛点二：图片上传效率低下
 
-LinkedIn Articles 的图片插入流程：
+公众号的图片上传流程：
 
 ```
-点击内容区域 -> 点击添加媒体 -> 选择图片 -> 等待上传
+进入素材管理 -> 上传图片 -> 返回编辑器 -> 插入图片 -> 调整位置
 ```
 
-每张图片需要 **多次点击 + 文件选择 + 等待上传**。一篇包含 5 张图片的文章，仅图片插入就需要 **5-10 分钟**。
+每张图片需要**多次点击 + 文件选择 + 等待上传**。一篇包含 5 张图片的文章，仅图片插入就需要 **5-10 分钟**。
 
-#### 痛点三：图片位置难以精确控制
+#### 痛点三：多平台切换
 
-Markdown 中图片位置是精确的：
-
-```markdown
-这是第一段内容。
-
-![图1](image1.jpg)
-
-这是第二段内容。
-
-![图2](image2.jpg)
-```
-
-但在 LinkedIn Articles 中，你需要：
-1. 记住每张图片应该插入的位置
-2. 滚动找到正确的段落
-3. 手动插入
-
-图片越多，出错概率越高。
-
-#### 痛点四：重复劳动
-
-如果你经常发布长文章，这些操作需要**每次重复**：
-- 每篇文章都要手动转换格式
-- 每张图片都要重复多次点击
-- 每次都要检查格式是否正确
+发布一篇文章需要在以下界面之间反复切换：
+1. Markdown 编辑器
+2. 公众号素材库（上传图片）
+3. 公众号文章编辑器
 
 ### 1.3 时间成本对比
 
 | 操作 | 手动方式 | 使用本 Skill |
 |------|----------|--------------|
 | 格式转换 | 15-20 分钟 | 0（自动） |
-| 封面图上传 | 1-2 分钟 | 10 秒 |
-| 5 张内容图插入 | 5-10 分钟 | 1 分钟 |
-| 总计 | **20-30 分钟** | **2-3 分钟** |
+| 图片上传 | 5-10 分钟 | 0（自动） |
+| 复制粘贴内容 | 2-3 分钟 | 0（自动） |
+| 总计 | **20-30 分钟** | **< 1 分钟** |
 
-**效率提升：10 倍以上**
+**效率提升：30 倍以上**
 
 ---
 
@@ -101,7 +81,7 @@ Markdown 中图片位置是精确的：
 
 ### 2.1 技术架构
 
-本 Skill 通过以下技术栈实现自动化：
+本 Skill 通过 API 直接与微信服务器通信，无需浏览器自动化：
 
 ```
 ┌─────────────────┐
@@ -110,17 +90,16 @@ Markdown 中图片位置是精确的：
          │ Python 解析
          v
 ┌─────────────────┐
-│  结构化数据 (JSON) │
+│  结构化数据       │
 │  - title        │
-│  - cover_image  │
-│  - content_images│
-│  - html         │
+│  - content      │
+│  - images       │
 └────────┬────────┘
-         │ Playwright MCP
+         │ WeChat API
          v
 ┌─────────────────┐
-│  LinkedIn Articles │
-│  编辑器 (浏览器自动化) │
+│  公众号草稿箱     │
+│  (自动保存)      │
 └─────────────────┘
 ```
 
@@ -128,107 +107,55 @@ Markdown 中图片位置是精确的：
 
 | 组件 | 作用 |
 |------|------|
-| `parse_markdown.py` | 解析 Markdown，提取标题、图片、转换 HTML |
-| `copy_to_clipboard.py` | 将 HTML/图片复制到系统剪贴板 |
-| Playwright MCP | 控制浏览器，模拟用户操作 |
+| `wechat_api.py` | 微信 API 客户端，处理认证和请求 |
+| `parse_markdown.py` | 解析 Markdown，提取标题和内容 |
 | Claude Code | 协调整个流程 |
 
-### 2.2 工作流程："先文后图"策略
+### 2.2 工作流程
 
-本 Skill 采用**先文后图**（Text First, Images Later）策略，确保内容完整且图片位置准确：
+本 Skill 采用 **API 优先** 策略，简单高效：
 
 ```
-Step 1: 解析 Markdown
+Step 1: 检查 API Key
         |
         v
-Step 2: 打开 LinkedIn Articles 编辑器
+Step 2: 获取公众号列表
         |
         v
-Step 3: 上传封面图（第一张图片）
+Step 3: 解析 Markdown 文件
         |
         v
-Step 4: 填写标题
+Step 4: 调用发布 API
         |
         v
-Step 5: 粘贴 HTML 富文本内容（通过剪贴板）
-        |
-        v
-Step 6: 在正确位置插入内容图片（通过剪贴板粘贴）
-        |
-        v
-Step 7: 保存草稿（绝不自动发布）
+Step 5: 报告结果
 ```
 
-### 2.3 关键技术优化
+### 2.3 关键技术优势
 
-#### 优化一：剪贴板富文本粘贴
+#### 优势一：基于 API，稳定可靠
 
-传统方式需要逐个设置格式，本 Skill 通过：
+传统方式依赖浏览器自动化，容易因页面变化而失效。本 Skill 直接调用 API：
 
-1. Python 将 Markdown 转换为 HTML
-2. 将 HTML 复制到系统剪贴板（保留富文本格式）
-3. 在编辑器中 `Cmd+V` 粘贴
+- 不受页面 UI 变化影响
+- 执行速度快（无需等待页面加载）
+- 错误提示清晰
 
-```python
-# copy_to_clipboard.py 核心逻辑
-from AppKit import NSPasteboard, NSPasteboardTypeHTML
+#### 优势二：跨平台支持
 
-pasteboard = NSPasteboard.generalPasteboard()
-pasteboard.setData_forType_(html_data, NSPasteboardTypeHTML)
-```
+| 平台 | 支持状态 |
+|------|----------|
+| macOS | ✓ |
+| Linux | ✓ |
+| Windows | ✓ |
 
-结果：**所有格式一次性粘贴完成**，包括 H2、粗体、链接、列表等。
+无需安装特殊依赖，标准 Python 即可运行。
 
-#### 优化二：图片剪贴板粘贴
+#### 优势三：图片自动处理
 
-传统方式每张图片需要多次点击，本 Skill 通过：
-
-1. Python 将图片复制到系统剪贴板
-2. 点击目标段落
-3. `Cmd+V` 粘贴图片
-
-```python
-# copy_to_clipboard.py 图片处理
-from AppKit import NSPasteboard, NSPasteboardTypeTIFF
-
-# 可选：上传前压缩图片
-img.thumbnail((2000, 2000))
-img.save(buffer, format='JPEG', quality=85)
-```
-
-对比：
-
-| 方式 | 浏览器操作次数 |
-|------|--------------|
-| 传统 | 多次点击 + 文件选择 |
-| 本 Skill | 1 次点击 + 1 次粘贴 |
-
-#### 优化三：图片位置精确定位
-
-`parse_markdown.py` 提取每张图片的**块索引信息**：
-
-```json
-{
-  "content_images": [
-    {
-      "path": "/path/to/img1.jpg",
-      "block_index": 5,
-      "after_text": "上下文文字（仅用于调试）..."
-    }
-  ],
-  "total_blocks": 12
-}
-```
-
-**block_index 定位原理**：
-- 每张图片的 `block_index` 表示它应该插入在第 N 个块元素之后（0 索引）
-- 不依赖文字匹配，精确可靠
-- `after_text` 保留用于人工核验，不参与定位
-
-**反向插入策略**：
-- 按 `block_index` 从大到小的顺序插入图片
-- 先插入索引大的，不会影响索引小的位置
-- 例如：先插入 block_index=12，再插入 block_index=5
+- 支持本地图片路径
+- 支持网络图片 URL
+- 自动上传到微信服务器
 
 ### 2.4 支持的 Markdown 格式
 
@@ -243,14 +170,25 @@ img.save(buffer, format='JPEG', quality=85)
 | `> 引用` | 引用块 |
 | `- 列表` | 无序列表 |
 | `1. 列表` | 有序列表 |
-| `![](img.jpg)` | 图片（第一张为封面） |
+| `![](img.jpg)` | 图片 |
 
-### 2.5 安全设计
+### 2.5 文章类型
+
+#### news（普通文章）
+标准的公众号文章格式，支持完整的富文本内容。
+
+#### newspic（小绿书）
+以图片为主的内容格式，类似小红书：
+- 最多 20 张图片
+- 文字限制 1000 字
+- 适合图片为主的内容
+
+### 2.6 安全设计
 
 **绝不自动发布**：本 Skill 仅将内容保存为草稿，最终发布需要用户手动确认。
 
 ```
-自动完成：上传、格式化、排版
+自动完成：上传、格式化、保存草稿
 不会执行：点击"发布"按钮
 ```
 
@@ -265,51 +203,30 @@ img.save(buffer, format='JPEG', quality=85)
 
 ### 3.1 前置条件
 
-#### 条件一：LinkedIn 账号
+#### 条件一：获取 API Key
 
-Articles 功能对所有 LinkedIn 用户开放（无需付费订阅）。验证方式：
-1. 访问 https://www.linkedin.com/article/new/
-2. 如果能看到编辑器，说明你有权限
+1. 访问 [wx.limyai.com](https://wx.limyai.com)
+2. 注册账号
+3. 授权你的微信公众号
+4. 在控制台获取 API Key
 
-#### 条件二：安装 Playwright MCP
-
-本 Skill 依赖 Playwright MCP 进行浏览器自动化。
-
-检查是否已安装：
-```bash
-cat ~/.claude/settings.json | grep playwright
-```
-
-如未安装，在 Claude Code 中执行：
-```
-帮我安装 Playwright MCP
-```
-
-#### 条件三：安装 Python 依赖
+#### 条件二：配置环境变量
 
 ```bash
-pip install Pillow pyobjc-framework-Cocoa
+# 复制示例文件
+cp .env.example .env
+
+# 编辑 .env 文件
+WECHAT_API_KEY=your_api_key_here
 ```
 
-验证安装：
-```bash
-python -c "from AppKit import NSPasteboard; print('OK')"
-```
-
-#### 条件四：安装本 Skill
+#### 条件三：安装本 Skill
 
 **方式 A：Git Clone（推荐）**
 
 ```bash
-git clone https://github.com/iamzifei/linkedin-article-publisher-skill.git
-cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.claude/skills/
-```
-
-**方式 B：插件市场**
-
-```
-/plugin marketplace add iamzifei/linkedin-article-publisher-skill
-/plugin install linkedin-article-publisher@iamzifei/linkedin-article-publisher-skill
+git clone https://github.com/iamzifei/wechat-article-publisher-skill.git
+cp -r wechat-article-publisher-skill/skills/wechat-article-publisher ~/.claude/skills/
 ```
 
 ### 3.2 触发指令
@@ -319,21 +236,21 @@ cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.clau
 #### 方式一：自然语言
 
 ```
-把 /path/to/article.md 发布到 LinkedIn
+把 /path/to/article.md 发布到微信公众号
 ```
 
 ```
-帮我把这篇文章发到 LinkedIn Articles：~/Documents/my-article.md
+帮我把这篇文章发到公众号：~/Documents/my-article.md
 ```
 
 ```
-Publish ~/blog/post.md to LinkedIn
+Publish ~/blog/post.md to WeChat
 ```
 
 #### 方式二：Skill 命令
 
 ```
-/linkedin-article-publisher /path/to/article.md
+/wechat-article-publisher /path/to/article.md
 ```
 
 ### 3.3 操作流程
@@ -341,45 +258,33 @@ Publish ~/blog/post.md to LinkedIn
 触发后，Claude 会自动执行以下步骤：
 
 ```
-[1/7] 解析 Markdown 文件...
-      -> 提取标题：「你的文章标题」
-      -> 发现封面图：cover.jpg
-      -> 发现 3 张内容图片
-      -> HTML 转换完成
+[1/4] 检查 API Key...
+      -> 从 .env 加载 WECHAT_API_KEY
+      -> 验证 Key 有效性
 
-[2/7] 打开 LinkedIn Articles 编辑器...
-      -> 导航到 https://www.linkedin.com/article/new/
-      -> 等待编辑器加载
+[2/4] 获取公众号列表...
+      -> 调用 API 获取已授权账号
+      -> 如果只有一个账号，自动选择
+      -> 如果有多个账号，询问用户
 
-[3/7] 上传封面图...
-      -> 点击"Add a cover image"
-      -> 上传 cover.jpg
-      -> 等待上传完成
+[3/4] 发布文章...
+      -> 解析 Markdown 文件
+      -> 提取标题、内容、图片
+      -> 调用发布 API
+      -> 等待返回结果
 
-[4/7] 填写标题...
-      -> 输入：「你的文章标题」
-
-[5/7] 粘贴文章内容...
-      -> HTML 已复制到剪贴板
-      -> 粘贴富文本内容
-      -> 格式保留：5 个 H2，8 处粗体，12 个链接
-
-[6/7] 插入内容图片...
-      -> 图片 1/3：定位到块索引 5 后
-      -> 图片 2/3：定位到块索引 8 后
-      -> 图片 3/3：定位到块索引 12 后
-
-[7/7] 保存草稿...
-      -> 草稿已自动保存
-      -> 请在 LinkedIn 中预览并手动发布
+[4/4] 报告结果...
+      -> 显示发布状态
+      -> 提供草稿 ID
+      -> 提醒用户手动预览和发布
 ```
 
 ### 3.4 注意事项
 
-1. **保持浏览器可见**：Playwright 需要控制浏览器窗口，请不要最小化
-2. **已登录 LinkedIn**：确保浏览器中已登录你的 LinkedIn 账号
-3. **图片路径**：Markdown 中的图片路径需要是有效的本地路径
-4. **网络稳定**：图片上传需要稳定的网络连接
+1. **API Key 安全**：不要将 .env 文件提交到 Git
+2. **公众号授权**：确保公众号在 wx.limyai.com 已完成授权
+3. **图片格式**：支持 jpg、png、gif、webp
+4. **标题长度**：微信限制标题最多 64 字符
 
 ---
 
@@ -423,51 +328,61 @@ Publish ~/blog/post.md to LinkedIn
 ### 4.2 执行命令
 
 ```
-把 ~/Documents/ai-tools-review.md 发布到 LinkedIn
+把 ~/Documents/ai-tools-review.md 发布到微信公众号
 ```
 
 ### 4.3 执行结果
 
 Claude 会：
 
-1. **解析文件**，输出：
+1. **检查 API Key**
+2. **获取公众号列表**：
    ```json
    {
-     "title": "2024 年最值得关注的 5 个 AI 工具",
-     "cover_image": "~/Documents/images/cover.jpg",
-     "content_images": [
-       {"path": "~/Documents/images/claude-demo.png", "block_index": 4},
-       {"path": "~/Documents/images/midjourney.jpg", "block_index": 6}
+     "accounts": [
+       {
+         "name": "我的公众号",
+         "wechatAppid": "wx1234567890",
+         "status": "active"
+       }
      ]
    }
    ```
 
-2. **自动操作浏览器**：
-   - 上传 cover.jpg 作为封面
-   - 填写标题「2024 年最值得关注的 5 个 AI 工具」
-   - 粘贴富文本内容（H2、粗体、引用、链接、列表全部保留）
-   - 在块索引 6 位置插入 midjourney.jpg（反向插入，先大后小）
-   - 在块索引 4 位置插入 claude-demo.png
-
-3. **完成提示**：
+3. **发布文章**：
+   ```json
+   {
+     "success": true,
+     "data": {
+       "publicationId": "xxx",
+       "mediaId": "xxx",
+       "status": "published",
+       "message": "文章已成功发布到公众号草稿箱"
+     }
+   }
    ```
-   草稿已保存！
 
-   请在 LinkedIn 中预览文章效果，确认无误后手动点击发布。
-   预览地址：当前浏览器窗口
+4. **完成提示**：
+   ```
+   ✓ 文章已成功发布到公众号草稿箱！
+
+   标题: 2024 年最值得关注的 5 个 AI 工具
+   状态: 已保存到草稿箱
+
+   请登录微信公众平台预览并发布。
    ```
 
 ---
 
 ## 5. 常见问题
 
-### Q1: LinkedIn Articles 需要付费吗？
+### Q1: 如何获取 WECHAT_API_KEY？
 
-A: 不需要。与 X (Twitter) Articles 需要 Premium Plus 不同，LinkedIn Articles 对所有用户免费开放。
+A: 访问 [wx.limyai.com](https://wx.limyai.com)，注册账号，授权你的微信公众号，在控制台获取 API Key。
 
-### Q2: 支持 Windows 吗？
+### Q2: 支持哪些平台？
 
-A: 目前仅支持 macOS，因为剪贴板操作使用了 `pyobjc-framework-Cocoa`。Windows 支持需要替换为 `pywin32`，欢迎贡献 PR。
+A: 支持 macOS、Linux、Windows。基于 API 的方式无需特殊依赖。
 
 ### Q3: 图片上传失败怎么办？
 
@@ -475,33 +390,33 @@ A: 检查以下几点：
 - 图片路径是否正确
 - 图片格式是否支持（jpg, png, gif, webp）
 - 网络连接是否稳定
-- 图片大小是否超过 LinkedIn 限制
+- 图片大小是否超过限制
 
-### Q4: 格式粘贴后显示不正确？
+### Q4: 可以发布到多个公众号吗？
 
-A: 确保：
-- Python 依赖已正确安装
-- 使用 `Cmd+V` 粘贴而非右键粘贴
-- 编辑器已完全加载
+A: 可以。如果你授权了多个公众号，Skill 会询问你要发布到哪个。
 
-### Q5: 可以发布到多个账号吗？
+### Q5: news 和 newspic 有什么区别？
 
-A: 目前不支持自动切换账号。如需发布到不同账号，请手动在浏览器中切换后再执行。
+A:
+- `news`：标准文章格式，支持完整富文本
+- `newspic`：小绿书格式，以图片为主，文字有限制
 
-### Q6: 如何自定义图片压缩质量？
+### Q6: 会自动发布文章吗？
 
-A: 在 SKILL.md 中，图片粘贴使用 `--quality 85` 参数。你可以修改这个值（1-100），数值越低压缩越多。
+A: 不会。文章始终保存为草稿，你需要在公众号后台手动预览和发布。
 
 ---
 
 ## 6. 更新日志
 
 ### v1.0.0 (2025-01)
-- 首次发布，支持 LinkedIn Articles
-- 剪贴板富文本粘贴
-- Block-index 精确定位图片位置
-- 反向插入顺序，防止索引偏移
-- 封面图 + 内容图支持
+- 首次发布，支持微信公众号
+- 基于 API 发布（无需浏览器自动化）
+- 跨平台支持（macOS、Linux、Windows）
+- Markdown 自动转换
+- 图片自动上传
+- 小绿书（newspic）支持
 - 仅保存草稿（安全设计）
 
 ---
@@ -509,17 +424,18 @@ A: 在 SKILL.md 中，图片粘贴使用 `--quality 85` 参数。你可以修改
 ## 附录：项目结构
 
 ```
-linkedin-article-publisher-skill/
+wechat-article-publisher-skill/
 ├── .claude-plugin/
 │   └── plugin.json           # 插件配置
 ├── skills/
-│   └── linkedin-article-publisher/
+│   └── wechat-article-publisher/
 │       ├── SKILL.md          # Skill 核心指令
 │       └── scripts/
-│           ├── parse_markdown.py    # Markdown 解析
-│           └── copy_to_clipboard.py # 剪贴板操作
+│           ├── wechat_api.py     # 微信 API 客户端
+│           └── parse_markdown.py # Markdown 解析
 ├── docs/
 │   └── GUIDE.md              # 本文档
+├── .env.example              # 环境变量模板
 ├── README.md
 └── LICENSE
 ```
@@ -528,10 +444,10 @@ linkedin-article-publisher-skill/
 
 ## 反馈与贡献
 
-- **GitHub**: https://github.com/iamzifei/linkedin-article-publisher-skill
+- **GitHub**: https://github.com/iamzifei/wechat-article-publisher-skill
 - **Issues**: 遇到问题请提交 Issue
-- **PR**: 欢迎贡献代码，特别是 Windows/Linux 支持
+- **PR**: 欢迎贡献代码
 
 ---
 
-*本文档由 Claude Code 生成，最后更新：2025-01*
+*本文档最后更新：2025-01*

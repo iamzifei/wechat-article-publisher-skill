@@ -1,71 +1,59 @@
-# LinkedIn Article Publisher Skill
+# 微信公众号文章发布 Skill
 
 [English](README.md) | [中文](README_CN.md)
 
-> 一键将 Markdown 文章发布到 LinkedIn Articles，告别繁琐的富文本编辑。
+> 一键将 Markdown 文章发布到微信公众号草稿箱，告别繁琐的复制粘贴排版流程。
 
-**v1.0.0** — Block-index 精确定位，图片位置更准确
+**v1.0.0** — 基于 API 的发布方式，稳定高效
 
 ---
 
 ## 痛点分析
 
-如果你习惯用 Markdown 写作，将内容发布到 LinkedIn Articles 是一个**极其痛苦**的过程：
+如果你习惯用 Markdown 写作，将内容发布到微信公众号是一个**极其痛苦**的过程：
 
 | 痛点 | 描述 |
 |------|------|
-| **格式丢失** | 从 Markdown 编辑器复制 -> 粘贴到 LinkedIn -> 格式全部丢失 |
-| **手动格式化** | 逐个设置 H2、粗体、链接 — 每篇文章 15-20 分钟 |
-| **图片上传繁琐** | 每张图片需要多次点击：添加媒体 -> 选择 -> 等待 |
-| **位置容易出错** | 很难记住每张图片应该插入的位置 |
+| **格式丢失** | 从 Markdown 编辑器复制 -> 粘贴到公众号后台 -> 格式全部丢失 |
+| **手动排版** | 逐个设置 H2、粗体、链接 — 每篇文章 15-20 分钟 |
+| **图片上传繁琐** | 需要通过素材库逐张上传图片 |
+| **步骤繁多** | 在 Markdown 编辑器、图片上传、公众号后台之间反复切换 |
 
 ### 时间对比
 
 | 操作 | 手动方式 | 使用本 Skill |
 |------|----------|--------------|
 | 格式转换 | 15-20 分钟 | 0（自动） |
-| 封面图上传 | 1-2 分钟 | 10 秒 |
-| 5 张内容图插入 | 5-10 分钟 | 1 分钟 |
-| **总计** | **20-30 分钟** | **2-3 分钟** |
+| 图片上传 | 5-10 分钟 | 0（自动） |
+| 复制粘贴内容 | 2-3 分钟 | 0（自动） |
+| **总计** | **20-30 分钟** | **< 1 分钟** |
 
-**效率提升 10 倍以上**
+**效率提升 30 倍以上**
 
 ---
 
 ## 解决方案
 
-本 Skill 自动化整个发布流程：
+本 Skill 使用微信 API 直接发布，稳定可靠：
 
 ```
 Markdown 文件
      | Python 解析
      v
-结构化数据（标题、带 block_index 的图片、HTML）
-     | Playwright MCP
+结构化数据（标题、内容、图片）
+     | WeChat API
      v
-LinkedIn Articles 编辑器（浏览器自动化）
-     |
-     v
-保存草稿（绝不自动发布）
+保存到公众号草稿箱（绝不自动发布）
 ```
 
 ### 核心特性
 
-- **富文本粘贴**：将 Markdown 转换为 HTML，通过剪贴板粘贴 — 所有格式完整保留
-- **Block-Index 定位**：使用元素索引精确定位，不依赖文字匹配
-- **反向插入**：从高到低索引插入图片，避免位置偏移
-- **智能等待策略**：条件满足立即返回，不浪费等待时间
+- **基于 API**：直接调用 API，无需浏览器自动化
+- **跨平台**：支持 macOS、Linux、Windows
+- **格式保留**：Markdown 自动转换为公众号兼容格式
+- **图片自动上传**：文章中的图片自动上传到微信服务器
 - **安全设计**：仅保存草稿，绝不自动发布
-
----
-
-## 为什么使用 Block-Index？
-
-之前的版本通过匹配周围文字来定位图片位置，但遇到以下情况会失败：
-- 多个段落内容相似
-- 文字太短不够唯一
-
-现在，每张图片都有一个 `block_index` 表示它应该跟在第几个块元素后面。这是确定性的，不会出错。
+- **小绿书支持**：支持发布为图文消息格式
 
 ---
 
@@ -74,31 +62,32 @@ LinkedIn Articles 编辑器（浏览器自动化）
 | 要求 | 说明 |
 |------|------|
 | Claude Code | [claude.ai/code](https://claude.ai/code) |
-| Playwright MCP | 浏览器自动化 |
-| LinkedIn 账号 | 免费账号即可（无需 Premium） |
-| Python 3.9+ | 需安装以下依赖 |
-| macOS | 目前仅支持 macOS |
-
-```bash
-pip install Pillow pyobjc-framework-Cocoa
-```
+| Python 3.9+ | 仅使用标准库，无需额外依赖 |
+| WECHAT_API_KEY | 从 [wx.limyai.com](https://wx.limyai.com) 获取 |
+| 微信公众号 | 在 wx.limyai.com 完成授权 |
 
 ---
 
 ## 安装方式
 
-### 方式一：Git Clone（推荐）
+### 步骤一：克隆仓库
 
 ```bash
-git clone https://github.com/iamzifei/linkedin-article-publisher-skill.git
-cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.claude/skills/
+git clone https://github.com/iamzifei/wechat-article-publisher-skill.git
 ```
 
-### 方式二：插件市场
+### 步骤二：复制 Skill 到 Claude
 
+```bash
+cp -r wechat-article-publisher-skill/skills/wechat-article-publisher ~/.claude/skills/
 ```
-/plugin marketplace add iamzifei/linkedin-article-publisher-skill
-/plugin install linkedin-article-publisher@iamzifei/linkedin-article-publisher-skill
+
+### 步骤三：配置 API Key
+
+```bash
+cd wechat-article-publisher-skill
+cp .env.example .env
+# 编辑 .env 文件，设置你的 WECHAT_API_KEY
 ```
 
 ---
@@ -108,17 +97,28 @@ cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.clau
 ### 自然语言
 
 ```
-把 /path/to/article.md 发布到 LinkedIn
+把 /path/to/article.md 发布到微信公众号
 ```
 
 ```
-帮我把这篇文章发到 LinkedIn：~/Documents/my-post.md
+帮我把这篇文章发到公众号：~/articles/ai-tools.md
+```
+
+```
+Publish ~/Documents/my-post.md to WeChat
 ```
 
 ### Skill 命令
 
 ```
-/linkedin-article-publisher /path/to/article.md
+/wechat-article-publisher /path/to/article.md
+```
+
+### 带选项使用
+
+```
+# 发布为小绿书（图文消息）
+/wechat-article-publisher /path/to/article.md --type newspic
 ```
 
 ---
@@ -126,30 +126,21 @@ cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.clau
 ## 工作流程
 
 ```
-[1/7] 解析 Markdown...
-      -> 提取标题、封面图、带 block_index 的内容图片
-      -> 转换为 HTML，统计块元素总数
+[1/4] 检查 API Key...
+      -> 从 .env 加载 WECHAT_API_KEY
 
-[2/7] 打开 LinkedIn Articles 编辑器...
-      -> 导航到 linkedin.com/article/new/
+[2/4] 获取公众号列表...
+      -> 查找已授权的公众号
+      -> 如果只有一个则自动选择，多个则询问用户
 
-[3/7] 上传封面图...
-      -> 第一张图片作为封面
+[3/4] 发布文章...
+      -> 解析 Markdown（标题、内容、图片）
+      -> 调用微信 API
+      -> 自动上传图片
 
-[4/7] 填写标题...
-      -> H1 作为标题（不包含在正文中）
-
-[5/7] 粘贴文章内容...
-      -> 通过剪贴板粘贴富文本
-      -> 所有格式完整保留
-
-[6/7] 插入内容图片（反向顺序）...
-      -> 按 block_index 从大到小排序
-      -> 点击对应块元素 -> 粘贴图片
-      -> 等待上传（完成后立即返回）
-
-[7/7] 保存草稿...
-      -> 请手动预览并发布
+[4/4] 报告结果...
+      -> 显示成功信息
+      -> 提醒用户手动预览并发布
 ```
 
 ---
@@ -167,7 +158,21 @@ cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.clau
 | `> 引用` | 引用块 |
 | `- 列表` | 无序列表 |
 | `1. 列表` | 有序列表 |
-| `![](img.jpg)` | 图片（第一张为封面） |
+| ``` 代码 ``` | 代码块 |
+| `![](img.jpg)` | 图片（自动上传） |
+
+---
+
+## 文章类型
+
+### news（默认）
+标准的公众号文章格式，支持完整的富文本。
+
+### newspic（小绿书）
+以图片为主的内容格式：
+- 最多支持 20 张图片
+- 文字内容限制 1000 字
+- 适合图片为主的内容发布
 
 ---
 
@@ -189,56 +194,42 @@ cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.clau
 > Claude 的上下文窗口高达 200K tokens。
 
 ![claude-demo](./images/claude-demo.png)
-
-## 2. Midjourney：AI 绘画领导者
-
-[Midjourney](https://midjourney.com) 是目前最受欢迎的 AI 绘画工具。
-
-![midjourney](./images/midjourney.jpg)
 ```
 
-### 解析输出（JSON）
+### 执行命令
 
-```json
-{
-  "title": "2024 年最值得关注的 5 个 AI 工具",
-  "cover_image": "./images/cover.jpg",
-  "content_images": [
-    {"path": "./images/claude-demo.png", "block_index": 4},
-    {"path": "./images/midjourney.jpg", "block_index": 6}
-  ],
-  "total_blocks": 7
-}
 ```
-
-### 插入顺序
-
-图片按反向顺序插入：先 `block_index=6`，再 `block_index=4`。
+把 ~/Documents/article.md 发布到微信公众号
+```
 
 ### 执行结果
 
-- 封面：`cover.jpg` 已上传
-- 标题：「2024 年最值得关注的 5 个 AI 工具」
-- 内容：富文本格式完整保留（H2、粗体、引用、链接）
-- 图片：通过 block index 精确定位插入
-- 状态：**草稿已保存**（等待手动预览发布）
+```
+✓ 文章已成功发布到公众号草稿箱！
+
+标题: 2024 年最值得关注的 5 个 AI 工具
+状态: 已保存到草稿箱
+
+请登录微信公众平台预览并发布。
+```
 
 ---
 
 ## 项目结构
 
 ```
-linkedin-article-publisher-skill/
+wechat-article-publisher-skill/
 ├── .claude-plugin/
 │   └── plugin.json              # 插件配置
 ├── skills/
-│   └── linkedin-article-publisher/
+│   └── wechat-article-publisher/
 │       ├── SKILL.md             # Skill 核心指令
 │       └── scripts/
-│           ├── parse_markdown.py    # 提取 block_index
-│           └── copy_to_clipboard.py
+│           ├── wechat_api.py    # 微信 API 客户端
+│           └── parse_markdown.py # Markdown 解析器
 ├── docs/
 │   └── GUIDE.md                 # 详细使用指南
+├── .env.example                 # 环境变量模板
 ├── README.md                    # 英文说明
 ├── README_CN.md                 # 中文说明（本文件）
 └── LICENSE
@@ -248,23 +239,42 @@ linkedin-article-publisher-skill/
 
 ## 常见问题
 
-**Q: LinkedIn 需要付费订阅吗？**
-A: 不需要。与 X Articles 需要 Premium Plus 不同，LinkedIn Articles 对所有用户免费开放。
+**Q: 如何获取 WECHAT_API_KEY？**
+A: 访问 [wx.limyai.com](https://wx.limyai.com)，注册并授权你的微信公众号，在控制台获取 API Key。
 
-**Q: 支持 Windows/Linux 吗？**
-A: 目前仅支持 macOS。欢迎贡献跨平台剪贴板支持的 PR。
+**Q: 可以发布到多个公众号吗？**
+A: 可以！如果你授权了多个公众号，Skill 会询问你要发布到哪个。
 
-**Q: 图片上传失败怎么办？**
-A: 检查：路径是否正确、格式是否支持（jpg/png/gif/webp）、网络是否稳定。
+**Q: 图片会怎么处理？**
+A: 图片会自动上传到微信服务器。支持本地路径和网络 URL。
 
-**Q: 可以发布到多个账号吗？**
-A: 不支持自动切换。请在浏览器中手动切换账号后再执行。
+**Q: 会自动发布文章吗？**
+A: 不会。文章始终保存为草稿，你需要在公众号后台手动发布。
 
-**Q: 为什么要反向插入图片？**
-A: 每插入一张图片，后续块元素的索引会偏移。从大到小插入可以确保前面的索引不受影响。
+**Q: news 和 newspic 有什么区别？**
+A: `news` 是标准文章格式；`newspic`（小绿书）是图文消息格式，以图片为主，文字有限制。
 
-**Q: 为什么等待有时候立即返回？**
-A: `browser_wait_for time=X` 会在操作完成时立即返回。`time` 参数只是最大等待时间，不是固定延时。
+**Q: 支持 Windows 吗？**
+A: 支持！与浏览器自动化工具不同，本 Skill 基于 API，支持所有平台。
+
+---
+
+## API 参考
+
+### 获取公众号列表
+```bash
+python wechat_api.py list-accounts
+```
+
+### 发布文章
+```bash
+python wechat_api.py publish --appid <appid> --markdown /path/to/article.md
+```
+
+### 发布为小绿书
+```bash
+python wechat_api.py publish --appid <appid> --markdown /path/to/article.md --type newspic
+```
 
 ---
 
@@ -277,11 +287,12 @@ A: `browser_wait_for time=X` 会在操作完成时立即返回。`time` 参数�
 ## 更新日志
 
 ### v1.0.0 (2025-01)
-- 首次发布，支持 LinkedIn Articles
-- 剪贴板富文本粘贴
-- Block-index 精确定位图片位置
-- 反向插入顺序，防止索引偏移
-- 封面图 + 内容图支持
+- 首次发布，支持微信公众号
+- 基于 API 发布（无需浏览器自动化）
+- 跨平台支持（macOS、Linux、Windows）
+- Markdown 自动转换为公众号格式
+- 图片自动上传
+- 小绿书（newspic）支持
 - 仅保存草稿（安全设计）
 
 ---
@@ -299,4 +310,4 @@ MIT License - 见 [LICENSE](LICENSE)
 ## 贡献
 
 - **Issues**：报告 Bug 或提出功能建议
-- **PR**：欢迎贡献代码，特别是 Windows/Linux 支持
+- **PR**：欢迎贡献代码

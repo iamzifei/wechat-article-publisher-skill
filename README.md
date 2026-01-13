@@ -1,71 +1,59 @@
-# LinkedIn Article Publisher Skill
+# WeChat Article Publisher Skill
 
 [English](README.md) | [中文](README_CN.md)
 
-> Publish Markdown articles to LinkedIn Articles with one command. Say goodbye to tedious rich text editing.
+> Publish Markdown articles to WeChat Official Account drafts with one command. Say goodbye to tedious copy-paste-format workflows.
 
-**v1.0.0** — Block-index positioning for precise image placement
+**v1.0.0** — API-based publishing for reliability and speed
 
 ---
 
 ## The Problem
 
-If you're used to writing in Markdown, publishing to LinkedIn Articles is a **painful process**:
+If you write in Markdown, publishing to WeChat Official Account (公众号) is a **painful process**:
 
 | Pain Point | Description |
 |------------|-------------|
-| **Format Loss** | Copy from Markdown editor -> Paste to LinkedIn -> All formatting gone |
-| **Manual Formatting** | Set each H2, bold, link manually — 15-20 min per article |
-| **Tedious Image Upload** | Multiple clicks per image: Add media -> Select -> Wait |
-| **Position Errors** | Hard to remember where each image should go |
+| **Format Loss** | Copy from Markdown editor -> Paste to WeChat -> All formatting gone |
+| **Manual Formatting** | Re-apply each H2, bold, link manually — 15-20 min per article |
+| **Image Upload Hassle** | Upload images one by one through WeChat's media library |
+| **Multiple Steps** | Switch between markdown editor, image uploads, and WeChat admin panel |
 
 ### Time Comparison
 
 | Task | Manual | With This Skill |
 |------|--------|-----------------|
 | Format conversion | 15-20 min | 0 (automatic) |
-| Cover image | 1-2 min | 10 sec |
-| 5 content images | 5-10 min | 1 min |
-| **Total** | **20-30 min** | **2-3 min** |
+| Image upload | 5-10 min | 0 (automatic) |
+| Copy & paste content | 2-3 min | 0 (automatic) |
+| **Total** | **20-30 min** | **< 1 min** |
 
-**10x efficiency improvement**
+**30x efficiency improvement**
 
 ---
 
 ## The Solution
 
-This skill automates the entire publishing workflow:
+This skill uses WeChat's API for direct, reliable publishing:
 
 ```
 Markdown File
      | Python parsing
      v
-Structured Data (title, images with block_index, HTML)
-     | Playwright MCP
+Structured Data (title, content, images)
+     | WeChat API
      v
-LinkedIn Articles Editor (browser automation)
-     |
-     v
-Draft Saved (never auto-publishes)
+Draft in WeChat Official Account (never auto-publishes)
 ```
 
 ### Key Features
 
-- **Rich Text Paste**: Convert Markdown to HTML, paste via clipboard — all formatting preserved
-- **Block-Index Positioning**: Precise image placement using element indices, not text matching
-- **Reverse Insertion**: Insert images from highest to lowest index to avoid position shifts
-- **Smart Wait Strategy**: Conditions return immediately when met, no wasted wait time
+- **API-Based**: Direct API calls, no browser automation needed
+- **Cross-Platform**: Works on macOS, Linux, and Windows
+- **Format Preserved**: Markdown automatically converted to WeChat-compatible format
+- **Image Auto-Upload**: Images in your markdown are automatically uploaded
 - **Safe by Design**: Only saves as draft, never publishes automatically
-
----
-
-## Why Block-Index?
-
-Previously, images were positioned by matching surrounding text — this failed when:
-- Multiple paragraphs had similar content
-- Text was too short to be unique
-
-Now, each image has a `block_index` indicating exactly which block element it follows. This is deterministic and reliable.
+- **小绿书 Support**: Publish as image-text format (newspic) for visual content
 
 ---
 
@@ -74,31 +62,32 @@ Now, each image has a `block_index` indicating exactly which block element it fo
 | Requirement | Details |
 |-------------|---------|
 | Claude Code | [claude.ai/code](https://claude.ai/code) |
-| Playwright MCP | Browser automation |
-| LinkedIn Account | Free account works (no Premium required) |
-| Python 3.9+ | With dependencies below |
-| macOS | Currently macOS only |
-
-```bash
-pip install Pillow pyobjc-framework-Cocoa
-```
+| Python 3.9+ | Standard library only (no extra dependencies) |
+| WECHAT_API_KEY | Get from [wx.limyai.com](https://wx.limyai.com) |
+| WeChat Account | Authorized on wx.limyai.com |
 
 ---
 
 ## Installation
 
-### Method 1: Git Clone (Recommended)
+### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/iamzifei/linkedin-article-publisher-skill.git
-cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.claude/skills/
+git clone https://github.com/iamzifei/wechat-article-publisher-skill.git
 ```
 
-### Method 2: Plugin Marketplace
+### Step 2: Copy Skill to Claude
 
+```bash
+cp -r wechat-article-publisher-skill/skills/wechat-article-publisher ~/.claude/skills/
 ```
-/plugin marketplace add iamzifei/linkedin-article-publisher-skill
-/plugin install linkedin-article-publisher@iamzifei/linkedin-article-publisher-skill
+
+### Step 3: Configure API Key
+
+```bash
+cd wechat-article-publisher-skill
+cp .env.example .env
+# Edit .env and set your WECHAT_API_KEY
 ```
 
 ---
@@ -108,17 +97,28 @@ cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.clau
 ### Natural Language
 
 ```
-Publish /path/to/article.md to LinkedIn
+把 /path/to/article.md 发布到微信公众号
 ```
 
 ```
-Help me post this article to LinkedIn: ~/Documents/my-post.md
+Publish ~/Documents/my-post.md to WeChat
+```
+
+```
+帮我把这篇文章发到公众号：~/articles/ai-tools.md
 ```
 
 ### Skill Command
 
 ```
-/linkedin-article-publisher /path/to/article.md
+/wechat-article-publisher /path/to/article.md
+```
+
+### With Options
+
+```
+# Publish as 小绿书 (image-text mode)
+/wechat-article-publisher /path/to/article.md --type newspic
 ```
 
 ---
@@ -126,30 +126,21 @@ Help me post this article to LinkedIn: ~/Documents/my-post.md
 ## Workflow Steps
 
 ```
-[1/7] Parse Markdown...
-      -> Extract title, cover image, content images with block_index
-      -> Convert to HTML, count total blocks
+[1/4] Check API Key...
+      -> Load WECHAT_API_KEY from .env
 
-[2/7] Open LinkedIn Articles editor...
-      -> Navigate to linkedin.com/article/new/
+[2/4] List WeChat Accounts...
+      -> Find authorized accounts
+      -> Auto-select if only one, ask if multiple
 
-[3/7] Upload cover image...
-      -> First image becomes cover
+[3/4] Publish Article...
+      -> Parse markdown (title, content, images)
+      -> Call WeChat API
+      -> Upload images automatically
 
-[4/7] Fill title...
-      -> H1 used as title (not included in body)
-
-[5/7] Paste article content...
-      -> Rich text via clipboard
-      -> All formatting preserved
-
-[6/7] Insert content images (reverse order)...
-      -> Sort by block_index descending
-      -> Click block element at index -> Paste image
-      -> Wait for upload (returns immediately when done)
-
-[7/7] Save draft...
-      -> Review and publish manually
+[4/4] Report Result...
+      -> Show success message
+      -> Remind to review and publish manually
 ```
 
 ---
@@ -167,7 +158,21 @@ Help me post this article to LinkedIn: ~/Documents/my-post.md
 | `> quote` | Blockquotes |
 | `- item` | Unordered lists |
 | `1. item` | Ordered lists |
-| `![](img.jpg)` | Images (first = cover) |
+| ``` code ``` | Code blocks |
+| `![](img.jpg)` | Images (auto-uploaded) |
+
+---
+
+## Article Types
+
+### news (Default)
+Standard WeChat article format with full rich text support.
+
+### newspic (小绿书)
+Image-focused format for visual content:
+- Up to 20 images extracted from content
+- Text limited to 1000 characters
+- Perfect for photo-heavy posts
 
 ---
 
@@ -189,56 +194,42 @@ AI tools exploded in 2024. Here are 5 worth your attention.
 > Claude's context window reaches 200K tokens.
 
 ![claude-demo](./images/claude-demo.png)
-
-## 2. Midjourney: AI Art Leader
-
-[Midjourney](https://midjourney.com) is the most popular AI art tool.
-
-![midjourney](./images/midjourney.jpg)
 ```
 
-### Parsed Output (JSON)
+### Command
 
-```json
-{
-  "title": "5 AI Tools Worth Watching in 2024",
-  "cover_image": "./images/cover.jpg",
-  "content_images": [
-    {"path": "./images/claude-demo.png", "block_index": 4},
-    {"path": "./images/midjourney.jpg", "block_index": 6}
-  ],
-  "total_blocks": 7
-}
 ```
-
-### Insertion Order
-
-Images inserted in reverse: `block_index=6` first, then `block_index=4`.
+把 ~/Documents/article.md 发布到微信公众号
+```
 
 ### Result
 
-- Cover: `cover.jpg` uploaded
-- Title: "5 AI Tools Worth Watching in 2024"
-- Content: Rich text with H2, bold, quotes, links
-- Images: Inserted at precise positions via block index
-- Status: **Draft saved** (ready for manual review)
+```
+✓ 文章已成功发布到公众号草稿箱！
+
+标题: 5 AI Tools Worth Watching in 2024
+状态: 已保存到草稿箱
+
+请登录微信公众平台预览并发布。
+```
 
 ---
 
 ## Project Structure
 
 ```
-linkedin-article-publisher-skill/
+wechat-article-publisher-skill/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin config
 ├── skills/
-│   └── linkedin-article-publisher/
+│   └── wechat-article-publisher/
 │       ├── SKILL.md             # Skill instructions
 │       └── scripts/
-│           ├── parse_markdown.py    # Extracts block_index
-│           └── copy_to_clipboard.py
+│           ├── wechat_api.py    # WeChat API client
+│           └── parse_markdown.py # Markdown parser
 ├── docs/
 │   └── GUIDE.md                 # Detailed guide
+├── .env.example                 # Environment template
 ├── README.md                    # This file
 ├── README_CN.md                 # Chinese version
 └── LICENSE
@@ -248,23 +239,42 @@ linkedin-article-publisher-skill/
 
 ## FAQ
 
-**Q: Why doesn't LinkedIn require Premium?**
-A: Unlike X Articles which requires Premium Plus, LinkedIn Articles is available to all users with a LinkedIn account.
-
-**Q: Windows/Linux support?**
-A: Currently macOS only. PRs welcome for cross-platform clipboard support.
-
-**Q: Image upload failed?**
-A: Check: valid path, supported format (jpg/png/gif/webp), stable network.
+**Q: How do I get a WECHAT_API_KEY?**
+A: Register at [wx.limyai.com](https://wx.limyai.com), authorize your WeChat Official Account, and get your API key from the dashboard.
 
 **Q: Can I publish to multiple accounts?**
-A: Not automatically. Switch accounts in browser manually before running.
+A: Yes! If you have multiple authorized accounts, the skill will ask you to choose which one to publish to.
 
-**Q: Why insert images in reverse order?**
-A: Each inserted image shifts subsequent block indices. Inserting from highest to lowest ensures earlier indices remain valid.
+**Q: What happens to my images?**
+A: Images are automatically uploaded to WeChat's servers. Both local paths and URLs are supported.
 
-**Q: Why does wait return immediately sometimes?**
-A: `browser_wait_for time=X` returns as soon as the operation completes. The `time` parameter is just a maximum, not a fixed delay.
+**Q: Will this auto-publish my article?**
+A: No, never. Articles are always saved as drafts. You must manually publish from the WeChat admin panel.
+
+**Q: What's the difference between news and newspic?**
+A: `news` is standard article format; `newspic` (小绿书) is image-focused with limited text, similar to Instagram posts.
+
+**Q: Does this work on Windows?**
+A: Yes! Unlike browser-based tools, this API-based approach works on all platforms.
+
+---
+
+## API Reference
+
+### List Accounts
+```bash
+python wechat_api.py list-accounts
+```
+
+### Publish Article
+```bash
+python wechat_api.py publish --appid <appid> --markdown /path/to/article.md
+```
+
+### Publish as 小绿书
+```bash
+python wechat_api.py publish --appid <appid> --markdown /path/to/article.md --type newspic
+```
 
 ---
 
@@ -277,11 +287,12 @@ A: `browser_wait_for time=X` returns as soon as the operation completes. The `ti
 ## Changelog
 
 ### v1.0.0 (2025-01)
-- Initial release for LinkedIn Articles
-- Rich text paste via clipboard
-- Block-index positioning for precise image placement
-- Reverse insertion order to prevent index shifts
-- Cover + content image support
+- Initial release for WeChat Official Account
+- API-based publishing (no browser automation)
+- Cross-platform support (macOS, Linux, Windows)
+- Markdown to WeChat format conversion
+- Auto image upload
+- 小绿书 (newspic) support
 - Draft-only publishing (safe by design)
 
 ---
@@ -299,4 +310,4 @@ MIT License - see [LICENSE](LICENSE)
 ## Contributing
 
 - **Issues**: Report bugs or request features
-- **PRs**: Welcome! Especially for Windows/Linux support
+- **PRs**: Welcome!

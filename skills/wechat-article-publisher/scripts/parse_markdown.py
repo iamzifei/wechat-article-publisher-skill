@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Parse Markdown for LinkedIn Articles publishing.
+Parse Markdown for WeChat Official Account article publishing.
 
 Extracts:
 - Title (from first H1/H2 or first line)
@@ -192,7 +192,7 @@ def extract_title(markdown: str) -> tuple[str, str]:
 
 
 def markdown_to_html(markdown: str) -> str:
-    """Convert markdown to HTML for LinkedIn Articles rich text paste."""
+    """Convert markdown to HTML for WeChat article publishing."""
     html = markdown
 
     # Process code blocks first (marked with ___CODE_BLOCK_START___ and ___CODE_BLOCK_END___)
@@ -285,7 +285,7 @@ def parse_markdown_file(filepath: str) -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Parse Markdown for LinkedIn Articles')
+    parser = argparse.ArgumentParser(description='Parse Markdown for WeChat article publishing')
     parser.add_argument('file', help='Markdown file to parse')
     parser.add_argument('--output', choices=['json', 'html'], default='json',
                        help='Output format (default: json)')

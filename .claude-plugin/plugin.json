@@ -1,22 +1,23 @@
 {
-  "name": "linkedin-article-publisher",
+  "name": "wechat-article-publisher",
   "version": "1.0.0",
-  "description": "Publish Markdown articles to LinkedIn Articles with block-index positioning and rich text formatting",
+  "description": "Publish Markdown articles to WeChat Official Account drafts via API with automatic format conversion",
   "author": {
     "name": "iamzifei"
   },
-  "repository": "https://github.com/iamzifei/linkedin-article-publisher-skill",
+  "repository": "https://github.com/iamzifei/wechat-article-publisher-skill",
   "license": "MIT",
   "keywords": [
-    "linkedin",
+    "wechat",
+    "weixin",
+    "公众号",
+    "微信",
     "articles",
     "markdown",
-    "publishing",
-    "professional"
+    "publishing"
   ],
   "dependencies": {
-    "mcp": ["playwright"],
-    "python": ["Pillow", "pyobjc-framework-Cocoa"]
+    "python": ["requests"]
   },
-  "platforms": ["macos"]
+  "platforms": ["macos", "linux", "windows"]
 }
