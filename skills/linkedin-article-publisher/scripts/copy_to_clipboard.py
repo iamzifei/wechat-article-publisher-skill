@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Copy image or HTML to system clipboard for X Articles publishing.
+Copy image or HTML to system clipboard for LinkedIn Articles publishing.
 
 Supports:
 - Image files (jpg, png, gif, webp) - copies as image data
@@ -124,7 +124,7 @@ def copy_html_to_clipboard_macos(html: str) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Copy to clipboard for X Articles')
+    parser = argparse.ArgumentParser(description='Copy to clipboard for LinkedIn Articles')
     subparsers = parser.add_subparsers(dest='type', required=True)
 
     # Image subcommand

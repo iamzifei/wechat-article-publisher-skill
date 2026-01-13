@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Parse Markdown for X Articles publishing.
+Parse Markdown for LinkedIn Articles publishing.
 
 Extracts:
 - Title (from first H1/H2 or first line)
@@ -192,11 +192,11 @@ def extract_title(markdown: str) -> tuple[str, str]:
 
 
 def markdown_to_html(markdown: str) -> str:
-    """Convert markdown to HTML for X Articles rich text paste."""
+    """Convert markdown to HTML for LinkedIn Articles rich text paste."""
     html = markdown
 
     # Process code blocks first (marked with ___CODE_BLOCK_START___ and ___CODE_BLOCK_END___)
-    # Convert to blockquote format since X Articles doesn't support <pre><code>
+    # Convert to blockquote format for better compatibility
     def convert_code_block(match):
         code_content = match.group(1)
         lines = code_content.strip().split('\n')
@@ -285,7 +285,7 @@ def parse_markdown_file(filepath: str) -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Parse Markdown for X Articles')
+    parser = argparse.ArgumentParser(description='Parse Markdown for LinkedIn Articles')
     parser.add_argument('file', help='Markdown file to parse')
     parser.add_argument('--output', choices=['json', 'html'], default='json',
                        help='Output format (default: json)')

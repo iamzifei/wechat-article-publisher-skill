@@ -1,18 +1,18 @@
 {
-  "name": "x-article-publisher",
-  "version": "1.1.0",
-  "description": "Publish Markdown articles to X (Twitter) Articles with block-index positioning and rich text formatting",
+  "name": "linkedin-article-publisher",
+  "version": "1.0.0",
+  "description": "Publish Markdown articles to LinkedIn Articles with block-index positioning and rich text formatting",
   "author": {
-    "name": "wshuyi"
+    "name": "iamzifei"
   },
-  "repository": "https://github.com/wshuyi/x-article-publisher-skill",
+  "repository": "https://github.com/iamzifei/linkedin-article-publisher-skill",
   "license": "MIT",
   "keywords": [
-    "x",
-    "twitter",
+    "linkedin",
     "articles",
     "markdown",
-    "publishing"
+    "publishing",
+    "professional"
   ],
   "dependencies": {
     "mcp": ["playwright"],

@@ -1,22 +1,22 @@
-# X Article Publisher Skill
+# LinkedIn Article Publisher Skill
 
 [English](README.md) | [中文](README_CN.md)
 
-> Publish Markdown articles to X (Twitter) Articles with one command. Say goodbye to tedious rich text editing.
+> Publish Markdown articles to LinkedIn Articles with one command. Say goodbye to tedious rich text editing.
 
-**v1.1.0** — Now with block-index positioning for precise image placement
+**v1.0.0** — Block-index positioning for precise image placement
 
 ---
 
 ## The Problem
 
-If you're used to writing in Markdown, publishing to X Articles is a **painful process**:
+If you're used to writing in Markdown, publishing to LinkedIn Articles is a **painful process**:
 
 | Pain Point | Description |
 |------------|-------------|
-| **Format Loss** | Copy from Markdown editor → Paste to X → All formatting gone |
+| **Format Loss** | Copy from Markdown editor -> Paste to LinkedIn -> All formatting gone |
 | **Manual Formatting** | Set each H2, bold, link manually — 15-20 min per article |
-| **Tedious Image Upload** | 5 clicks per image: Add media → Media → Add photo → Select → Wait |
+| **Tedious Image Upload** | Multiple clicks per image: Add media -> Select -> Wait |
 | **Position Errors** | Hard to remember where each image should go |
 
 ### Time Comparison
@@ -38,33 +38,28 @@ This skill automates the entire publishing workflow:
 
 ```
 Markdown File
-     ↓ Python parsing
+     | Python parsing
+     v
 Structured Data (title, images with block_index, HTML)
-     ↓ Playwright MCP
-X Articles Editor (browser automation)
-     ↓
+     | Playwright MCP
+     v
+LinkedIn Articles Editor (browser automation)
+     |
+     v
 Draft Saved (never auto-publishes)
 ```
 
 ### Key Features
 
 - **Rich Text Paste**: Convert Markdown to HTML, paste via clipboard — all formatting preserved
-- **Block-Index Positioning** (v1.1): Precise image placement using element indices, not text matching
+- **Block-Index Positioning**: Precise image placement using element indices, not text matching
 - **Reverse Insertion**: Insert images from highest to lowest index to avoid position shifts
 - **Smart Wait Strategy**: Conditions return immediately when met, no wasted wait time
 - **Safe by Design**: Only saves as draft, never publishes automatically
 
 ---
 
-## What's New in v1.1.0
-
-| Feature | Before | After |
-|---------|--------|-------|
-| Image positioning | Text matching (fragile) | Block index (precise) |
-| Insertion order | Sequential | Reverse (high→low) |
-| Wait behavior | Fixed delay | Immediate return on condition |
-
-### Why Block-Index?
+## Why Block-Index?
 
 Previously, images were positioned by matching surrounding text — this failed when:
 - Multiple paragraphs had similar content
@@ -80,7 +75,7 @@ Now, each image has a `block_index` indicating exactly which block element it fo
 |-------------|---------|
 | Claude Code | [claude.ai/code](https://claude.ai/code) |
 | Playwright MCP | Browser automation |
-| X Premium Plus | Required for Articles feature |
+| LinkedIn Account | Free account works (no Premium required) |
 | Python 3.9+ | With dependencies below |
 | macOS | Currently macOS only |
 
@@ -95,15 +90,15 @@ pip install Pillow pyobjc-framework-Cocoa
 ### Method 1: Git Clone (Recommended)
 
 ```bash
-git clone https://github.com/wshuyi/x-article-publisher-skill.git
-cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
+git clone https://github.com/iamzifei/linkedin-article-publisher-skill.git
+cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.claude/skills/
 ```
 
 ### Method 2: Plugin Marketplace
 
 ```
-/plugin marketplace add wshuyi/x-article-publisher-skill
-/plugin install x-article-publisher@wshuyi/x-article-publisher-skill
+/plugin marketplace add iamzifei/linkedin-article-publisher-skill
+/plugin install linkedin-article-publisher@iamzifei/linkedin-article-publisher-skill
 ```
 
 ---
@@ -113,17 +108,17 @@ cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
 ### Natural Language
 
 ```
-Publish /path/to/article.md to X
+Publish /path/to/article.md to LinkedIn
 ```
 
 ```
-Help me post this article to X Articles: ~/Documents/my-post.md
+Help me post this article to LinkedIn: ~/Documents/my-post.md
 ```
 
 ### Skill Command
 
 ```
-/x-article-publisher /path/to/article.md
+/linkedin-article-publisher /path/to/article.md
 ```
 
 ---
@@ -132,29 +127,29 @@ Help me post this article to X Articles: ~/Documents/my-post.md
 
 ```
 [1/7] Parse Markdown...
-      → Extract title, cover image, content images with block_index
-      → Convert to HTML, count total blocks
+      -> Extract title, cover image, content images with block_index
+      -> Convert to HTML, count total blocks
 
-[2/7] Open X Articles editor...
-      → Navigate to x.com/compose/articles
+[2/7] Open LinkedIn Articles editor...
+      -> Navigate to linkedin.com/article/new/
 
 [3/7] Upload cover image...
-      → First image becomes cover
+      -> First image becomes cover
 
 [4/7] Fill title...
-      → H1 used as title (not included in body)
+      -> H1 used as title (not included in body)
 
 [5/7] Paste article content...
-      → Rich text via clipboard
-      → All formatting preserved
+      -> Rich text via clipboard
+      -> All formatting preserved
 
 [6/7] Insert content images (reverse order)...
-      → Sort by block_index descending
-      → Click block element at index → Paste image
-      → Wait for upload (returns immediately when done)
+      -> Sort by block_index descending
+      -> Click block element at index -> Paste image
+      -> Wait for upload (returns immediately when done)
 
 [7/7] Save draft...
-      → ✅ Review and publish manually
+      -> Review and publish manually
 ```
 
 ---
@@ -165,6 +160,7 @@ Help me post this article to X Articles: ~/Documents/my-post.md
 |--------|--------|
 | `# H1` | Article title (extracted, not in body) |
 | `## H2` | Section headers |
+| `### H3` | Sub-section headers |
 | `**bold**` | **Bold text** |
 | `*italic*` | *Italic text* |
 | `[text](url)` | Hyperlinks |
@@ -232,11 +228,11 @@ Images inserted in reverse: `block_index=6` first, then `block_index=4`.
 ## Project Structure
 
 ```
-x-article-publisher-skill/
+linkedin-article-publisher-skill/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin config
 ├── skills/
-│   └── x-article-publisher/
+│   └── linkedin-article-publisher/
 │       ├── SKILL.md             # Skill instructions
 │       └── scripts/
 │           ├── parse_markdown.py    # Extracts block_index
@@ -252,8 +248,8 @@ x-article-publisher-skill/
 
 ## FAQ
 
-**Q: Why Premium Plus?**
-A: X Articles is exclusive to Premium Plus subscribers.
+**Q: Why doesn't LinkedIn require Premium?**
+A: Unlike X Articles which requires Premium Plus, LinkedIn Articles is available to all users with a LinkedIn account.
 
 **Q: Windows/Linux support?**
 A: Currently macOS only. PRs welcome for cross-platform clipboard support.
@@ -267,11 +263,8 @@ A: Not automatically. Switch accounts in browser manually before running.
 **Q: Why insert images in reverse order?**
 A: Each inserted image shifts subsequent block indices. Inserting from highest to lowest ensures earlier indices remain valid.
 
-**Q: What if text matching was used before?**
-A: v1.1 replaces text matching with `block_index`. The `after_text` field is kept for debugging but not used for positioning.
-
 **Q: Why does wait return immediately sometimes?**
-A: `browser_wait_for textGone="..."` returns as soon as the text disappears. The `time` parameter is just a maximum, not a fixed delay.
+A: `browser_wait_for time=X` returns as soon as the operation completes. The `time` parameter is just a maximum, not a fixed delay.
 
 ---
 
@@ -283,17 +276,13 @@ A: `browser_wait_for textGone="..."` returns as soon as the text disappears. The
 
 ## Changelog
 
-### v1.1.0 (2025-12)
-- **Block-index positioning**: Replace text matching with precise element indices
-- **Reverse insertion order**: Prevent index shifts when inserting multiple images
-- **Optimized wait strategy**: Return immediately when upload completes
-- **H1 title handling**: H1 extracted as title, not included in body HTML
-
-### v1.0.0 (2025-12)
-- Initial release
+### v1.0.0 (2025-01)
+- Initial release for LinkedIn Articles
 - Rich text paste via clipboard
+- Block-index positioning for precise image placement
+- Reverse insertion order to prevent index shifts
 - Cover + content image support
-- Draft-only publishing
+- Draft-only publishing (safe by design)
 
 ---
 
@@ -303,7 +292,7 @@ MIT License - see [LICENSE](LICENSE)
 
 ## Author
 
-[wshuyi](https://github.com/wshuyi)
+[iamzifei](https://github.com/iamzifei)
 
 ---
 

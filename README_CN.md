@@ -1,22 +1,22 @@
-# X Article Publisher Skill
+# LinkedIn Article Publisher Skill
 
 [English](README.md) | [中文](README_CN.md)
 
-> 一键将 Markdown 文章发布到 X (Twitter) Articles，告别繁琐的富文本编辑。
+> 一键将 Markdown 文章发布到 LinkedIn Articles，告别繁琐的富文本编辑。
 
-**v1.1.0** — 新增 block-index 精确定位，图片位置更准确
+**v1.0.0** — Block-index 精确定位，图片位置更准确
 
 ---
 
 ## 痛点分析
 
-如果你习惯用 Markdown 写作，将内容发布到 X Articles 是一个**极其痛苦**的过程：
+如果你习惯用 Markdown 写作，将内容发布到 LinkedIn Articles 是一个**极其痛苦**的过程：
 
 | 痛点 | 描述 |
 |------|------|
-| **格式丢失** | 从 Markdown 编辑器复制 → 粘贴到 X → 格式全部丢失 |
+| **格式丢失** | 从 Markdown 编辑器复制 -> 粘贴到 LinkedIn -> 格式全部丢失 |
 | **手动格式化** | 逐个设置 H2、粗体、链接 — 每篇文章 15-20 分钟 |
-| **图片上传繁琐** | 每张图片 5 次点击：添加媒体 → 媒体 → 添加照片 → 选择 → 等待 |
+| **图片上传繁琐** | 每张图片需要多次点击：添加媒体 -> 选择 -> 等待 |
 | **位置容易出错** | 很难记住每张图片应该插入的位置 |
 
 ### 时间对比
@@ -38,33 +38,28 @@
 
 ```
 Markdown 文件
-     ↓ Python 解析
+     | Python 解析
+     v
 结构化数据（标题、带 block_index 的图片、HTML）
-     ↓ Playwright MCP
-X Articles 编辑器（浏览器自动化）
-     ↓
+     | Playwright MCP
+     v
+LinkedIn Articles 编辑器（浏览器自动化）
+     |
+     v
 保存草稿（绝不自动发布）
 ```
 
 ### 核心特性
 
 - **富文本粘贴**：将 Markdown 转换为 HTML，通过剪贴板粘贴 — 所有格式完整保留
-- **Block-Index 定位**（v1.1）：使用元素索引精确定位，不依赖文字匹配
+- **Block-Index 定位**：使用元素索引精确定位，不依赖文字匹配
 - **反向插入**：从高到低索引插入图片，避免位置偏移
 - **智能等待策略**：条件满足立即返回，不浪费等待时间
 - **安全设计**：仅保存草稿，绝不自动发布
 
 ---
 
-## v1.1.0 更新内容
-
-| 功能 | 之前 | 现在 |
-|------|------|------|
-| 图片定位 | 文字匹配（不稳定） | Block 索引（精确） |
-| 插入顺序 | 顺序插入 | 反向插入（从大到小） |
-| 等待行为 | 固定延时 | 条件满足立即返回 |
-
-### 为什么使用 Block-Index？
+## 为什么使用 Block-Index？
 
 之前的版本通过匹配周围文字来定位图片位置，但遇到以下情况会失败：
 - 多个段落内容相似
@@ -80,7 +75,7 @@ X Articles 编辑器（浏览器自动化）
 |------|------|
 | Claude Code | [claude.ai/code](https://claude.ai/code) |
 | Playwright MCP | 浏览器自动化 |
-| X Premium Plus | Articles 功能需要此订阅 |
+| LinkedIn 账号 | 免费账号即可（无需 Premium） |
 | Python 3.9+ | 需安装以下依赖 |
 | macOS | 目前仅支持 macOS |
 
@@ -95,15 +90,15 @@ pip install Pillow pyobjc-framework-Cocoa
 ### 方式一：Git Clone（推荐）
 
 ```bash
-git clone https://github.com/wshuyi/x-article-publisher-skill.git
-cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
+git clone https://github.com/iamzifei/linkedin-article-publisher-skill.git
+cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.claude/skills/
 ```
 
 ### 方式二：插件市场
 
 ```
-/plugin marketplace add wshuyi/x-article-publisher-skill
-/plugin install x-article-publisher@wshuyi/x-article-publisher-skill
+/plugin marketplace add iamzifei/linkedin-article-publisher-skill
+/plugin install linkedin-article-publisher@iamzifei/linkedin-article-publisher-skill
 ```
 
 ---
@@ -113,17 +108,17 @@ cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
 ### 自然语言
 
 ```
-把 /path/to/article.md 发布到 X
+把 /path/to/article.md 发布到 LinkedIn
 ```
 
 ```
-帮我把这篇文章发到 X Articles：~/Documents/my-post.md
+帮我把这篇文章发到 LinkedIn：~/Documents/my-post.md
 ```
 
 ### Skill 命令
 
 ```
-/x-article-publisher /path/to/article.md
+/linkedin-article-publisher /path/to/article.md
 ```
 
 ---
@@ -132,29 +127,29 @@ cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
 
 ```
 [1/7] 解析 Markdown...
-      → 提取标题、封面图、带 block_index 的内容图片
-      → 转换为 HTML，统计块元素总数
+      -> 提取标题、封面图、带 block_index 的内容图片
+      -> 转换为 HTML，统计块元素总数
 
-[2/7] 打开 X Articles 编辑器...
-      → 导航到 x.com/compose/articles
+[2/7] 打开 LinkedIn Articles 编辑器...
+      -> 导航到 linkedin.com/article/new/
 
 [3/7] 上传封面图...
-      → 第一张图片作为封面
+      -> 第一张图片作为封面
 
 [4/7] 填写标题...
-      → H1 作为标题（不包含在正文中）
+      -> H1 作为标题（不包含在正文中）
 
 [5/7] 粘贴文章内容...
-      → 通过剪贴板粘贴富文本
-      → 所有格式完整保留
+      -> 通过剪贴板粘贴富文本
+      -> 所有格式完整保留
 
 [6/7] 插入内容图片（反向顺序）...
-      → 按 block_index 从大到小排序
-      → 点击对应块元素 → 粘贴图片
-      → 等待上传（完成后立即返回）
+      -> 按 block_index 从大到小排序
+      -> 点击对应块元素 -> 粘贴图片
+      -> 等待上传（完成后立即返回）
 
 [7/7] 保存草稿...
-      → ✅ 请手动预览并发布
+      -> 请手动预览并发布
 ```
 
 ---
@@ -165,6 +160,7 @@ cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
 |------|------|
 | `# H1` | 文章标题（提取后不含在正文中） |
 | `## H2` | 二级标题 |
+| `### H3` | 三级标题 |
 | `**粗体**` | **粗体文字** |
 | `*斜体*` | *斜体文字* |
 | `[文字](url)` | 超链接 |
@@ -232,11 +228,11 @@ cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
 ## 项目结构
 
 ```
-x-article-publisher-skill/
+linkedin-article-publisher-skill/
 ├── .claude-plugin/
 │   └── plugin.json              # 插件配置
 ├── skills/
-│   └── x-article-publisher/
+│   └── linkedin-article-publisher/
 │       ├── SKILL.md             # Skill 核心指令
 │       └── scripts/
 │           ├── parse_markdown.py    # 提取 block_index
@@ -252,8 +248,8 @@ x-article-publisher-skill/
 
 ## 常见问题
 
-**Q: 为什么需要 Premium Plus？**
-A: X Articles 是 Premium Plus 订阅专属功能，普通用户无法使用。
+**Q: LinkedIn 需要付费订阅吗？**
+A: 不需要。与 X Articles 需要 Premium Plus 不同，LinkedIn Articles 对所有用户免费开放。
 
 **Q: 支持 Windows/Linux 吗？**
 A: 目前仅支持 macOS。欢迎贡献跨平台剪贴板支持的 PR。
@@ -267,11 +263,8 @@ A: 不支持自动切换。请在浏览器中手动切换账号后再执行。
 **Q: 为什么要反向插入图片？**
 A: 每插入一张图片，后续块元素的索引会偏移。从大到小插入可以确保前面的索引不受影响。
 
-**Q: 之前的文字匹配方式还能用吗？**
-A: v1.1 已用 `block_index` 替代文字匹配。`after_text` 字段保留用于调试，但不再用于定位。
-
 **Q: 为什么等待有时候立即返回？**
-A: `browser_wait_for textGone="..."` 会在文字消失时立即返回。`time` 参数只是最大等待时间，不是固定延时。
+A: `browser_wait_for time=X` 会在操作完成时立即返回。`time` 参数只是最大等待时间，不是固定延时。
 
 ---
 
@@ -283,17 +276,13 @@ A: `browser_wait_for textGone="..."` 会在文字消失时立即返回。`time` 
 
 ## 更新日志
 
-### v1.1.0 (2025-12)
-- **Block-index 定位**：用精确的元素索引替代文字匹配
-- **反向插入顺序**：防止多图插入时的索引偏移
-- **优化等待策略**：上传完成后立即返回
-- **H1 标题处理**：H1 提取为标题，不包含在正文 HTML 中
-
-### v1.0.0 (2025-12)
-- 首次发布
+### v1.0.0 (2025-01)
+- 首次发布，支持 LinkedIn Articles
 - 剪贴板富文本粘贴
+- Block-index 精确定位图片位置
+- 反向插入顺序，防止索引偏移
 - 封面图 + 内容图支持
-- 仅保存草稿
+- 仅保存草稿（安全设计）
 
 ---
 
@@ -303,7 +292,7 @@ MIT License - 见 [LICENSE](LICENSE)
 
 ## 作者
 
-[wshuyi](https://github.com/wshuyi)
+[iamzifei](https://github.com/iamzifei)
 
 ---
 

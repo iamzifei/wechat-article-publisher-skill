@@ -1,18 +1,8 @@
-# X Article Publisher Skill 使用指南
+# LinkedIn Article Publisher Skill 使用指南
 
-> 一键将 Markdown 文章发布到 X (Twitter) Articles，告别繁琐的富文本编辑。
+> 一键将 Markdown 文章发布到 LinkedIn Articles，告别繁琐的富文本编辑。
 
-**v1.1.0** — 新增 block-index 精确定位，图片位置更准确
-
----
-
-## v1.1.0 更新亮点
-
-| 功能 | v1.0 | v1.1 |
-|------|------|------|
-| 图片定位 | 文字匹配（不稳定） | Block 索引（精确） |
-| 插入顺序 | 顺序插入 | 反向插入（高→低） |
-| 等待策略 | 固定延时 | 条件满足立即返回 |
+**v1.0.0** — Block-index 精确定位，图片位置更准确
 
 ---
 
@@ -29,42 +19,42 @@
 
 ## 1. 解决的痛点
 
-### 1.1 X Articles 是什么？
+### 1.1 LinkedIn Articles 是什么？
 
-X (原 Twitter) 为 Premium Plus 订阅用户提供了 **Articles** 功能，允许用户发布长文章（类似博客），突破 280 字符限制。文章支持：
+LinkedIn 为所有用户提供了 **Articles** 功能，允许用户发布长文章（类似博客），在专业社交网络上分享见解。文章支持：
 
 - 富文本格式（标题、粗体、引用等）
 - 多张图片嵌入
 - 超链接
 
-访问入口：https://x.com/compose/articles
+访问入口：https://www.linkedin.com/article/new/
 
 ### 1.2 手动发布的痛点
 
-如果你习惯用 Markdown 写作，将内容发布到 X Articles 是一个**极其繁琐**的过程：
+如果你习惯用 Markdown 写作，将内容发布到 LinkedIn Articles 是一个**极其繁琐**的过程：
 
 #### 痛点一：格式无法直接粘贴
 
 ```
-❌ 从 Markdown 编辑器复制内容 → 粘贴到 X Articles → 格式全部丢失
+从 Markdown 编辑器复制内容 -> 粘贴到 LinkedIn Articles -> 格式全部丢失
 ```
 
-X Articles 编辑器不支持 Markdown，你需要**逐一手动设置**每个格式：
-- 选中文字 → 点击 H2 按钮
-- 选中文字 → 点击粗体按钮
-- 选中文字 → 点击链接按钮 → 粘贴 URL
+LinkedIn Articles 编辑器不支持 Markdown，你需要**逐一手动设置**每个格式：
+- 选中文字 -> 点击 H2 按钮
+- 选中文字 -> 点击粗体按钮
+- 选中文字 -> 点击链接按钮 -> 粘贴 URL
 
 一篇包含 5 个小节、10 处加粗、8 个链接的文章，格式设置可能需要 **15-20 分钟**。
 
 #### 痛点二：图片插入效率低下
 
-X Articles 的图片插入流程：
+LinkedIn Articles 的图片插入流程：
 
 ```
-点击段落 → 点击"添加媒体内容" → 点击"媒体" → 点击"添加照片或视频" → 选择文件 → 等待上传
+点击内容区域 -> 点击添加媒体 -> 选择图片 -> 等待上传
 ```
 
-每张图片需要 **5 次点击 + 文件选择 + 等待上传**。一篇包含 5 张图片的文章，仅图片插入就需要 **5-10 分钟**。
+每张图片需要 **多次点击 + 文件选择 + 等待上传**。一篇包含 5 张图片的文章，仅图片插入就需要 **5-10 分钟**。
 
 #### 痛点三：图片位置难以精确控制
 
@@ -80,7 +70,7 @@ Markdown 中图片位置是精确的：
 ![图2](image2.jpg)
 ```
 
-但在 X Articles 中，你需要：
+但在 LinkedIn Articles 中，你需要：
 1. 记住每张图片应该插入的位置
 2. 滚动找到正确的段落
 3. 手动插入
@@ -91,7 +81,7 @@ Markdown 中图片位置是精确的：
 
 如果你经常发布长文章，这些操作需要**每次重复**：
 - 每篇文章都要手动转换格式
-- 每张图片都要重复 5 次点击
+- 每张图片都要重复多次点击
 - 每次都要检查格式是否正确
 
 ### 1.3 时间成本对比
@@ -118,7 +108,7 @@ Markdown 中图片位置是精确的：
 │   Markdown 文件  │
 └────────┬────────┘
          │ Python 解析
-         ▼
+         v
 ┌─────────────────┐
 │  结构化数据 (JSON) │
 │  - title        │
@@ -127,10 +117,10 @@ Markdown 中图片位置是精确的：
 │  - html         │
 └────────┬────────┘
          │ Playwright MCP
-         ▼
+         v
 ┌─────────────────┐
-│  X Articles 编辑器 │
-│  (浏览器自动化)   │
+│  LinkedIn Articles │
+│  编辑器 (浏览器自动化) │
 └─────────────────┘
 ```
 
@@ -149,17 +139,23 @@ Markdown 中图片位置是精确的：
 
 ```
 Step 1: 解析 Markdown
-        ↓
-Step 2: 打开 X Articles 编辑器
-        ↓
+        |
+        v
+Step 2: 打开 LinkedIn Articles 编辑器
+        |
+        v
 Step 3: 上传封面图（第一张图片）
-        ↓
+        |
+        v
 Step 4: 填写标题
-        ↓
+        |
+        v
 Step 5: 粘贴 HTML 富文本内容（通过剪贴板）
-        ↓
+        |
+        v
 Step 6: 在正确位置插入内容图片（通过剪贴板粘贴）
-        ↓
+        |
+        v
 Step 7: 保存草稿（绝不自动发布）
 ```
 
@@ -185,7 +181,7 @@ pasteboard.setData_forType_(html_data, NSPasteboardTypeHTML)
 
 #### 优化二：图片剪贴板粘贴
 
-传统方式每张图片需要 5 次点击，本 Skill 通过：
+传统方式每张图片需要多次点击，本 Skill 通过：
 
 1. Python 将图片复制到系统剪贴板
 2. 点击目标段落
@@ -204,12 +200,12 @@ img.save(buffer, format='JPEG', quality=85)
 
 | 方式 | 浏览器操作次数 |
 |------|--------------|
-| 传统 | 5 次点击 + 文件选择 |
+| 传统 | 多次点击 + 文件选择 |
 | 本 Skill | 1 次点击 + 1 次粘贴 |
 
 #### 优化三：图片位置精确定位
 
-`parse_markdown.py` 提取每张图片的**块索引信息**（v1.1 新特性）：
+`parse_markdown.py` 提取每张图片的**块索引信息**：
 
 ```json
 {
@@ -240,6 +236,7 @@ img.save(buffer, format='JPEG', quality=85)
 |--------------|------|
 | `# H1` | 文章标题（自动提取） |
 | `## H2` | 二级标题 |
+| `### H3` | 三级标题 |
 | `**粗体**` | **粗体文字** |
 | `*斜体*` | *斜体文字* |
 | `[链接](url)` | 超链接 |
@@ -253,8 +250,8 @@ img.save(buffer, format='JPEG', quality=85)
 **绝不自动发布**：本 Skill 仅将内容保存为草稿，最终发布需要用户手动确认。
 
 ```
-✅ 自动完成：上传、格式化、排版
-❌ 不会执行：点击"发布"按钮
+自动完成：上传、格式化、排版
+不会执行：点击"发布"按钮
 ```
 
 这确保用户可以在发布前：
@@ -268,10 +265,10 @@ img.save(buffer, format='JPEG', quality=85)
 
 ### 3.1 前置条件
 
-#### 条件一：X Premium Plus 订阅
+#### 条件一：LinkedIn 账号
 
-Articles 功能仅对 Premium Plus 用户开放。验证方式：
-1. 访问 https://x.com/compose/articles
+Articles 功能对所有 LinkedIn 用户开放（无需付费订阅）。验证方式：
+1. 访问 https://www.linkedin.com/article/new/
 2. 如果能看到编辑器，说明你有权限
 
 #### 条件二：安装 Playwright MCP
@@ -304,15 +301,15 @@ python -c "from AppKit import NSPasteboard; print('OK')"
 **方式 A：Git Clone（推荐）**
 
 ```bash
-git clone https://github.com/wshuyi/x-article-publisher-skill.git
-cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
+git clone https://github.com/iamzifei/linkedin-article-publisher-skill.git
+cp -r linkedin-article-publisher-skill/skills/linkedin-article-publisher ~/.claude/skills/
 ```
 
 **方式 B：插件市场**
 
 ```
-/plugin marketplace add wshuyi/x-article-publisher-skill
-/plugin install x-article-publisher@wshuyi/x-article-publisher-skill
+/plugin marketplace add iamzifei/linkedin-article-publisher-skill
+/plugin install linkedin-article-publisher@iamzifei/linkedin-article-publisher-skill
 ```
 
 ### 3.2 触发指令
@@ -322,21 +319,21 @@ cp -r x-article-publisher-skill/skills/x-article-publisher ~/.claude/skills/
 #### 方式一：自然语言
 
 ```
-把 /path/to/article.md 发布到 X
+把 /path/to/article.md 发布到 LinkedIn
 ```
 
 ```
-帮我把这篇文章发到 X Articles：~/Documents/my-article.md
+帮我把这篇文章发到 LinkedIn Articles：~/Documents/my-article.md
 ```
 
 ```
-Publish ~/blog/post.md to X
+Publish ~/blog/post.md to LinkedIn
 ```
 
 #### 方式二：Skill 命令
 
 ```
-/x-article-publisher /path/to/article.md
+/linkedin-article-publisher /path/to/article.md
 ```
 
 ### 3.3 操作流程
@@ -345,42 +342,42 @@ Publish ~/blog/post.md to X
 
 ```
 [1/7] 解析 Markdown 文件...
-      → 提取标题：「你的文章标题」
-      → 发现封面图：cover.jpg
-      → 发现 3 张内容图片
-      → HTML 转换完成
+      -> 提取标题：「你的文章标题」
+      -> 发现封面图：cover.jpg
+      -> 发现 3 张内容图片
+      -> HTML 转换完成
 
-[2/7] 打开 X Articles 编辑器...
-      → 导航到 https://x.com/compose/articles
-      → 等待编辑器加载
+[2/7] 打开 LinkedIn Articles 编辑器...
+      -> 导航到 https://www.linkedin.com/article/new/
+      -> 等待编辑器加载
 
 [3/7] 上传封面图...
-      → 点击"添加照片或视频"
-      → 上传 cover.jpg
-      → 等待上传完成
+      -> 点击"Add a cover image"
+      -> 上传 cover.jpg
+      -> 等待上传完成
 
 [4/7] 填写标题...
-      → 输入：「你的文章标题」
+      -> 输入：「你的文章标题」
 
 [5/7] 粘贴文章内容...
-      → HTML 已复制到剪贴板
-      → 粘贴富文本内容
-      → 格式保留：5 个 H2，8 处粗体，12 个链接
+      -> HTML 已复制到剪贴板
+      -> 粘贴富文本内容
+      -> 格式保留：5 个 H2，8 处粗体，12 个链接
 
 [6/7] 插入内容图片...
-      → 图片 1/3：定位到「这是第一段内容...」后
-      → 图片 2/3：定位到「这是第二段内容...」后
-      → 图片 3/3：定位到「这是第三段内容...」后
+      -> 图片 1/3：定位到块索引 5 后
+      -> 图片 2/3：定位到块索引 8 后
+      -> 图片 3/3：定位到块索引 12 后
 
 [7/7] 保存草稿...
-      → 草稿已自动保存
-      → 请在 X 中预览并手动发布
+      -> 草稿已自动保存
+      -> 请在 LinkedIn 中预览并手动发布
 ```
 
 ### 3.4 注意事项
 
 1. **保持浏览器可见**：Playwright 需要控制浏览器窗口，请不要最小化
-2. **已登录 X**：确保浏览器中已登录你的 X 账号
+2. **已登录 LinkedIn**：确保浏览器中已登录你的 LinkedIn 账号
 3. **图片路径**：Markdown 中的图片路径需要是有效的本地路径
 4. **网络稳定**：图片上传需要稳定的网络连接
 
@@ -426,7 +423,7 @@ Publish ~/blog/post.md to X
 ### 4.2 执行命令
 
 ```
-把 ~/Documents/ai-tools-review.md 发布到 X
+把 ~/Documents/ai-tools-review.md 发布到 LinkedIn
 ```
 
 ### 4.3 执行结果
@@ -439,8 +436,8 @@ Claude 会：
      "title": "2024 年最值得关注的 5 个 AI 工具",
      "cover_image": "~/Documents/images/cover.jpg",
      "content_images": [
-       {"path": "~/Documents/images/claude-demo.png", "after_text": "安全可靠"},
-       {"path": "~/Documents/images/midjourney.jpg", "after_text": "是目前最受欢迎的 AI 绘画工具"}
+       {"path": "~/Documents/images/claude-demo.png", "block_index": 4},
+       {"path": "~/Documents/images/midjourney.jpg", "block_index": 6}
      ]
    }
    ```
@@ -449,14 +446,14 @@ Claude 会：
    - 上传 cover.jpg 作为封面
    - 填写标题「2024 年最值得关注的 5 个 AI 工具」
    - 粘贴富文本内容（H2、粗体、引用、链接、列表全部保留）
-   - 在「安全可靠」段落后插入 claude-demo.png
-   - 在「是目前最受欢迎的 AI 绘画工具」段落后插入 midjourney.jpg
+   - 在块索引 6 位置插入 midjourney.jpg（反向插入，先大后小）
+   - 在块索引 4 位置插入 claude-demo.png
 
 3. **完成提示**：
    ```
-   ✅ 草稿已保存！
+   草稿已保存！
 
-   请在 X 中预览文章效果，确认无误后手动点击发布。
+   请在 LinkedIn 中预览文章效果，确认无误后手动点击发布。
    预览地址：当前浏览器窗口
    ```
 
@@ -464,9 +461,9 @@ Claude 会：
 
 ## 5. 常见问题
 
-### Q1: 为什么需要 Premium Plus？
+### Q1: LinkedIn Articles 需要付费吗？
 
-A: X Articles 是 Premium Plus 订阅专属功能。普通用户无法访问 `/compose/articles` 页面。
+A: 不需要。与 X (Twitter) Articles 需要 Premium Plus 不同，LinkedIn Articles 对所有用户免费开放。
 
 ### Q2: 支持 Windows 吗？
 
@@ -478,7 +475,7 @@ A: 检查以下几点：
 - 图片路径是否正确
 - 图片格式是否支持（jpg, png, gif, webp）
 - 网络连接是否稳定
-- 图片大小是否超过 X 限制
+- 图片大小是否超过 LinkedIn 限制
 
 ### Q4: 格式粘贴后显示不正确？
 
@@ -497,14 +494,26 @@ A: 在 SKILL.md 中，图片粘贴使用 `--quality 85` 参数。你可以修改
 
 ---
 
+## 6. 更新日志
+
+### v1.0.0 (2025-01)
+- 首次发布，支持 LinkedIn Articles
+- 剪贴板富文本粘贴
+- Block-index 精确定位图片位置
+- 反向插入顺序，防止索引偏移
+- 封面图 + 内容图支持
+- 仅保存草稿（安全设计）
+
+---
+
 ## 附录：项目结构
 
 ```
-x-article-publisher-skill/
+linkedin-article-publisher-skill/
 ├── .claude-plugin/
 │   └── plugin.json           # 插件配置
 ├── skills/
-│   └── x-article-publisher/
+│   └── linkedin-article-publisher/
 │       ├── SKILL.md          # Skill 核心指令
 │       └── scripts/
 │           ├── parse_markdown.py    # Markdown 解析
@@ -519,10 +528,10 @@ x-article-publisher-skill/
 
 ## 反馈与贡献
 
-- **GitHub**: https://github.com/wshuyi/x-article-publisher-skill
+- **GitHub**: https://github.com/iamzifei/linkedin-article-publisher-skill
 - **Issues**: 遇到问题请提交 Issue
 - **PR**: 欢迎贡献代码，特别是 Windows/Linux 支持
 
 ---
 
-*本文档由 Claude Code 生成，最后更新：2024-12*
+*本文档由 Claude Code 生成，最后更新：2025-01*
