@@ -1,7 +1,7 @@
 {
   "name": "wechat-article-publisher",
   "version": "1.0.0",
-  "description": "Publish Markdown articles to WeChat Official Account drafts via API with automatic format conversion",
+  "description": "Publish Markdown/HTML articles to WeChat Official Account (微信公众号) drafts",
   "author": {
     "name": "iamzifei"
   },

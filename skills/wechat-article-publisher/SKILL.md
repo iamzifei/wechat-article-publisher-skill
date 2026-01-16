@@ -1,6 +1,6 @@
 ---
 name: wechat-article-publisher
-description: Publish Markdown or HTML articles to WeChat Official Account drafts via API. Use when user wants to publish a Markdown/HTML file to WeChat, or mentions "publish to WeChat", "post to 公众号", "微信公众号文章", "发布到微信", "HTML文章", or wants help with WeChat article publishing. Supports both Markdown and HTML formats with automatic format detection.
+description: Publish Markdown/HTML articles to WeChat Official Account (微信公众号) drafts via API
 ---
 
 # WeChat Article Publisher
