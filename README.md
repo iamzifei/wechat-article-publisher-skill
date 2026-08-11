@@ -1,5 +1,7 @@
 # WeChat Article Publisher Skill
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2T024VDBG)
+
 <p align="center">
   <strong>English</strong> | <a href="#中文文档">中文</a>
 </p>
