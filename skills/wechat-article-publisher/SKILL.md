@@ -1,6 +1,7 @@
 ---
 name: wechat-article-publisher
 description: Publish Markdown/HTML articles to WeChat Official Account (微信公众号) drafts via API
+  新手引导：输入 `/公众号发布 新手`、「这个怎么用」「第一次用」「能干嘛」时，走 SKILL.md 的〈新手上路〉，不要直接开始干活。
 ---
 
 # WeChat Article Publisher
@@ -352,3 +353,44 @@ A: WeChat limits titles to 64 characters. The script will use the first 64 chars
 
 ### Q: What's the difference between news and newspic?
 A: `news` is standard article format; `newspic` (小绿书) is image-focused with limited text.
+
+
+## 新手上路（用户不知道该输入什么时，走这里）
+
+**触发**：`/公众号发布 新手`、「这个怎么用」「第一次用」「能干嘛」「带我走一遍」，
+以及用户输入了技能名却没有给任何任务的时候。
+
+这个模式的铁律：**不假设、不索取**。用户可能什么都没准备，
+不要一上来就问他要文件、要 API key、要具体需求。按下面四步走：
+
+**一、先说清楚这是什么（三句话以内）**
+
+一句话：**把 Markdown 文章直接发进公众号草稿箱**，图片自动上传。
+走的是微信官方接口，不是模拟点击，所以稳定。
+发的是草稿，最终点「发表」的还是你。
+
+**二、给编号选项，让他按回车就能继续**
+
+不要问开放式问题（「你想做什么？」对新手是负担）。给 3 个选项加一个默认：
+
+```
+想先看哪个？（直接回车 = 1）
+  1. 先看看发出去长什么样（示例）
+  2. 把我的 Markdown 发成草稿
+  3. 先讲讲要准备什么
+```
+
+**三、直接演示一遍，边做边解释**
+
+选完立刻做给他看，用**示例数据**，不需要他提供任何东西。
+每做完一步，加一行「💡 刚才发生了什么」，一句话说明这步的意义。
+
+**四、毕业**
+
+演示完只问一个是非题：「要不要用你自己的文章真跑一遍？」
+答是就进正常流程；答否就告诉他随时回来输 `/公众号发布 新手`。
+
+**关于前置条件**：这个技能需要 公众号的 API 凭据（写在 .env 里的 WECHAT_API_KEY）。
+**新手模式下不要提前索取**——先用示例数据演示完，到第四步真跑的时候再引导他配置，
+并说清楚在哪配、怎么拿。新手最容易在这一步流失。
+
